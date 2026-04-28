@@ -27,6 +27,8 @@ flowchart TD
     Q3 --> Q3B[Q3B_RADIUS_HORIZON]
     Q3B --> D3{D3_RADIUS_CLASSIFIER<br/>sets radius_state}
     D3 --> D4{D4_REFLECTION_SELECTOR}
+    NOTE_D4["Enumerates 3-axis combinations (locus, orientation, radius)<br/>to preserve deterministic routing."]
+    D4 --- NOTE_D4
 
     D4 --> R1[R1_STABILIZE_AGENCY]
     D4 --> R2[R2_RECIPROCAL_RESET]
