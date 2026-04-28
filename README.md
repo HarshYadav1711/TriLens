@@ -1,6 +1,6 @@
 # TriLens — A Deterministic Reflection System
 
-TriLens is a structured, deterministic reflection tool designed to help someone understand how they showed up during their day.
+TriLens is a structured, deterministic reflection tool for understanding how someone showed up during their day.
 
 It does not generate advice.
 It does not interpret free text.
@@ -14,7 +14,7 @@ The result is a system where:
 * every answer is meaningful
 * every path is traceable
 
-Same inputs produce the same outputs. Every time.
+Same inputs always produce the same outputs.
 
 ---
 
@@ -72,6 +72,17 @@ Everything is visible in the data.
 
 ---
 
+## What This Deliberately Does Not Do
+
+These are design choices to protect clarity, auditability, and trust:
+
+* No AI usage at runtime
+* No free text input
+* No probabilistic outputs
+* No hidden logic
+
+---
+
 ## Why Deterministic
 
 Reflection requires trust.
@@ -84,7 +95,7 @@ By keeping the system deterministic:
 * every path is auditable
 * every improvement can be made at the level of structure
 
-This turns reflection into something that can be designed, not guessed.
+This makes reflection something you can design and inspect, not guess at.
 
 ---
 
