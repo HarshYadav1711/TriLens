@@ -131,6 +131,13 @@ def interpolate(text: str, values: Dict[str, str]) -> str:
     return pattern.sub(repl, text)
 
 
+def polish_summary_closing(line: str) -> str:
+    """Keep summary closing specific and human, without changing logic."""
+    if line.strip() == "Choose one concrete action in the next day and keep it observable.":
+        return "Keep it small enough to complete, and visible enough to matter."
+    return line
+
+
 def dominant_value(candidates: List[str]) -> str:
     if not candidates:
         return "unknown"
@@ -364,7 +371,7 @@ def run(tree: Dict[str, Any]) -> Tuple[Dict[str, str], Dict[str, str], Dict[str,
                 summary_output.append(rendered)
                 print(f"- {rendered}")
             if isinstance(closing, str) and closing.strip():
-                rendered = interpolate(closing, state)
+                rendered = polish_summary_closing(interpolate(closing, state))
                 summary_output.append(rendered)
                 print(f"- {rendered}")
 

@@ -196,6 +196,13 @@
       });
     }
 
+    function polishSummaryClosing(line) {
+      if (String(line).trim() === "Choose one concrete action in the next day and keep it observable.") {
+        return "Keep it small enough to complete, and visible enough to matter.";
+      }
+      return line;
+    }
+
     function chooseSummaryVariant(axisDominant) {
       const key = [axisDominant.locus, axisDominant.orientation, axisDominant.radius].join("|");
       if (key === "victim|entitlement|self_centrism") {
@@ -368,7 +375,7 @@
       const variant = chooseSummaryVariant(axis);
       const template = node.template || {};
       const lines = Array.isArray(template.lines) ? template.lines : [];
-      const closing = template.closing ? [template.closing] : [];
+      const closing = template.closing ? [polishSummaryClosing(template.closing)] : [];
       const finalLines = [...variant, ...lines, ...closing].map(interpolate);
 
       const listItems = finalLines.map((line) => `<li>${line}</li>`).join("");
