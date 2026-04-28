@@ -1,0 +1,308 @@
+{
+  "tree_id": "trilens-canonical-reflection-tree",
+  "version": "2.0.0",
+  "title": "TriLens Canonical Reflection Tree",
+  "description": "Deterministic, auditable reflection tree with fixed options and no runtime AI.",
+  "source_of_truth": "tree/reflection-tree.json",
+  "constraints": {
+    "offline_only": true,
+    "runtime_ai_calls": false,
+    "free_text_input": false,
+    "deterministic_paths": true
+  },
+  "axis_sequence": [
+    "locus",
+    "orientation",
+    "radius"
+  ],
+  "start_node_id": "START",
+  "nodes": [
+    {
+      "id": "START",
+      "type": "start",
+      "target": "Q0_CHECKIN"
+    },
+    {
+      "id": "Q0_CHECKIN",
+      "type": "question",
+      "axis": "prelude",
+      "state_key": "checkin_state",
+      "prompt": "Before we begin, what best matches your present pace?",
+      "options": [
+        { "id": "compressed", "label": "Compressed and reactive", "target": "D0_CHECKIN_ROUTER" },
+        { "id": "steady", "label": "Steady and workable", "target": "D0_CHECKIN_ROUTER" },
+        { "id": "open", "label": "Open and exploratory", "target": "D0_CHECKIN_ROUTER" }
+      ]
+    },
+    {
+      "id": "D0_CHECKIN_ROUTER",
+      "type": "decision",
+      "input": ["checkin_state"],
+      "mappings": [
+        { "when": { "checkin_state": "compressed" }, "target": "B0_GROUNDING" },
+        { "when": { "checkin_state": "steady" }, "target": "B0_STABILITY" },
+        { "when": { "checkin_state": "open" }, "target": "B0_EXPANSION" }
+      ]
+    },
+    {
+      "id": "B0_GROUNDING",
+      "type": "bridge",
+      "text": "We will keep this concise and concrete.",
+      "target": "Q1_LOCUS_PRIMARY"
+    },
+    {
+      "id": "B0_STABILITY",
+      "type": "bridge",
+      "text": "We will build from what is already working.",
+      "target": "Q1_LOCUS_PRIMARY"
+    },
+    {
+      "id": "B0_EXPANSION",
+      "type": "bridge",
+      "text": "We will use this window to refine direction.",
+      "target": "Q1_LOCUS_PRIMARY"
+    },
+    {
+      "id": "Q1_LOCUS_PRIMARY",
+      "type": "question",
+      "axis": "locus",
+      "state_key": "locus_primary",
+      "prompt": "Under pressure, where does your attention go first?",
+      "options": [
+        { "id": "outside_forces", "label": "Toward forces outside my control", "target": "Q1B_LOCUS_WINDOW" },
+        { "id": "shared_influence", "label": "Toward shared influence and constraints", "target": "Q1B_LOCUS_WINDOW" },
+        { "id": "next_action", "label": "Toward the next action I can take", "target": "Q1B_LOCUS_WINDOW" }
+      ]
+    },
+    {
+      "id": "Q1B_LOCUS_WINDOW",
+      "type": "question",
+      "axis": "locus",
+      "state_key": "locus_window",
+      "prompt": "How stable is that stance across a typical week?",
+      "options": [
+        { "id": "mostly", "label": "Mostly stable", "target": "D1_LOCUS_CLASSIFIER" },
+        { "id": "mixed", "label": "Mixed by context", "target": "D1_LOCUS_CLASSIFIER" },
+        { "id": "shifting", "label": "Shifts day to day", "target": "D1_LOCUS_CLASSIFIER" }
+      ]
+    },
+    {
+      "id": "D1_LOCUS_CLASSIFIER",
+      "type": "decision",
+      "input": ["locus_primary", "locus_window"],
+      "mappings": [
+        { "when": { "locus_primary": "outside_forces", "locus_window": "mostly" }, "set": { "locus_state": "victim" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+        { "when": { "locus_primary": "outside_forces", "locus_window": "mixed" }, "set": { "locus_state": "victim" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+        { "when": { "locus_primary": "outside_forces", "locus_window": "shifting" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+        { "when": { "locus_primary": "shared_influence", "locus_window": "mostly" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+        { "when": { "locus_primary": "shared_influence", "locus_window": "mixed" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+        { "when": { "locus_primary": "shared_influence", "locus_window": "shifting" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+        { "when": { "locus_primary": "next_action", "locus_window": "mostly" }, "set": { "locus_state": "victor" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+        { "when": { "locus_primary": "next_action", "locus_window": "mixed" }, "set": { "locus_state": "victor" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+        { "when": { "locus_primary": "next_action", "locus_window": "shifting" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" }
+      ]
+    },
+    {
+      "id": "B1_LOCUS_TO_ORIENTATION",
+      "type": "bridge",
+      "text": "Now we shift from agency to contribution stance.",
+      "target": "Q2_ORIENTATION_PRIMARY"
+    },
+    {
+      "id": "Q2_ORIENTATION_PRIMARY",
+      "type": "question",
+      "axis": "orientation",
+      "state_key": "orientation_primary",
+      "prompt": "In shared work, what is your first internal question?",
+      "options": [
+        { "id": "how_can_i_help", "label": "How can I reduce friction here?", "target": "Q2B_ORIENTATION_BALANCE" },
+        { "id": "what_is_fair", "label": "What is fair for all involved?", "target": "Q2B_ORIENTATION_BALANCE" },
+        { "id": "what_is_owed", "label": "What is owed before I extend more effort?", "target": "Q2B_ORIENTATION_BALANCE" }
+      ]
+    },
+    {
+      "id": "Q2B_ORIENTATION_BALANCE",
+      "type": "question",
+      "axis": "orientation",
+      "state_key": "orientation_balance",
+      "prompt": "When resources are tight, how do you usually respond?",
+      "options": [
+        { "id": "lean_in", "label": "Lean in with bounded support", "target": "D2_ORIENTATION_CLASSIFIER" },
+        { "id": "recalibrate", "label": "Recalibrate expectations first", "target": "D2_ORIENTATION_CLASSIFIER" },
+        { "id": "hold_line", "label": "Hold the line on reciprocity", "target": "D2_ORIENTATION_CLASSIFIER" }
+      ]
+    },
+    {
+      "id": "D2_ORIENTATION_CLASSIFIER",
+      "type": "decision",
+      "input": ["orientation_primary", "orientation_balance"],
+      "mappings": [
+        { "when": { "orientation_primary": "how_can_i_help", "orientation_balance": "lean_in" }, "set": { "orientation_state": "contribution" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+        { "when": { "orientation_primary": "how_can_i_help", "orientation_balance": "recalibrate" }, "set": { "orientation_state": "contribution" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+        { "when": { "orientation_primary": "how_can_i_help", "orientation_balance": "hold_line" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+        { "when": { "orientation_primary": "what_is_fair", "orientation_balance": "lean_in" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+        { "when": { "orientation_primary": "what_is_fair", "orientation_balance": "recalibrate" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+        { "when": { "orientation_primary": "what_is_fair", "orientation_balance": "hold_line" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+        { "when": { "orientation_primary": "what_is_owed", "orientation_balance": "lean_in" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+        { "when": { "orientation_primary": "what_is_owed", "orientation_balance": "recalibrate" }, "set": { "orientation_state": "entitlement" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+        { "when": { "orientation_primary": "what_is_owed", "orientation_balance": "hold_line" }, "set": { "orientation_state": "entitlement" }, "target": "B2_ORIENTATION_TO_RADIUS" }
+      ]
+    },
+    {
+      "id": "B2_ORIENTATION_TO_RADIUS",
+      "type": "bridge",
+      "text": "Finally we look at the scope of concern around each choice.",
+      "target": "Q3_RADIUS_PRIMARY"
+    },
+    {
+      "id": "Q3_RADIUS_PRIMARY",
+      "type": "question",
+      "axis": "radius",
+      "state_key": "radius_primary",
+      "prompt": "Who is centered most in your next decision?",
+      "options": [
+        { "id": "self_protection", "label": "Primarily my own position", "target": "Q3B_RADIUS_HORIZON" },
+        { "id": "near_circle", "label": "My needs and immediate counterparts", "target": "Q3B_RADIUS_HORIZON" },
+        { "id": "system_impact", "label": "My needs plus wider system impact", "target": "Q3B_RADIUS_HORIZON" }
+      ]
+    },
+    {
+      "id": "Q3B_RADIUS_HORIZON",
+      "type": "question",
+      "axis": "radius",
+      "state_key": "radius_horizon",
+      "prompt": "How far ahead do you usually evaluate downstream effects?",
+      "options": [
+        { "id": "today", "label": "Today and immediate risk", "target": "D3_RADIUS_CLASSIFIER" },
+        { "id": "this_week", "label": "This week and near consequences", "target": "D3_RADIUS_CLASSIFIER" },
+        { "id": "multi_step", "label": "Several steps ahead", "target": "D3_RADIUS_CLASSIFIER" }
+      ]
+    },
+    {
+      "id": "D3_RADIUS_CLASSIFIER",
+      "type": "decision",
+      "input": ["radius_primary", "radius_horizon"],
+      "mappings": [
+        { "when": { "radius_primary": "self_protection", "radius_horizon": "today" }, "set": { "radius_state": "self_centrism" }, "target": "D4_REFLECTION_SELECTOR" },
+        { "when": { "radius_primary": "self_protection", "radius_horizon": "this_week" }, "set": { "radius_state": "self_centrism" }, "target": "D4_REFLECTION_SELECTOR" },
+        { "when": { "radius_primary": "self_protection", "radius_horizon": "multi_step" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+        { "when": { "radius_primary": "near_circle", "radius_horizon": "today" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+        { "when": { "radius_primary": "near_circle", "radius_horizon": "this_week" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+        { "when": { "radius_primary": "near_circle", "radius_horizon": "multi_step" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+        { "when": { "radius_primary": "system_impact", "radius_horizon": "today" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+        { "when": { "radius_primary": "system_impact", "radius_horizon": "this_week" }, "set": { "radius_state": "altrocentrism" }, "target": "D4_REFLECTION_SELECTOR" },
+        { "when": { "radius_primary": "system_impact", "radius_horizon": "multi_step" }, "set": { "radius_state": "altrocentrism" }, "target": "D4_REFLECTION_SELECTOR" }
+      ]
+    },
+    {
+      "id": "D4_REFLECTION_SELECTOR",
+      "type": "decision",
+      "input": ["locus_state", "orientation_state", "radius_state"],
+      "mappings": [
+        { "when": { "locus_state": "victim", "orientation_state": "entitlement", "radius_state": "self_centrism" }, "target": "R1_STABILIZE_AGENCY" },
+        { "when": { "locus_state": "victim", "orientation_state": "entitlement", "radius_state": "balanced" }, "target": "R1_STABILIZE_AGENCY" },
+        { "when": { "locus_state": "victim", "orientation_state": "entitlement", "radius_state": "altrocentrism" }, "target": "R2_RECIPROCAL_RESET" },
+        { "when": { "locus_state": "victim", "orientation_state": "balanced", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+        { "when": { "locus_state": "victim", "orientation_state": "balanced", "radius_state": "balanced" }, "target": "R3_GROUNDED_BOUNDARIES" },
+        { "when": { "locus_state": "victim", "orientation_state": "balanced", "radius_state": "altrocentrism" }, "target": "R4_SHARED_STEADINESS" },
+        { "when": { "locus_state": "victim", "orientation_state": "contribution", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+        { "when": { "locus_state": "victim", "orientation_state": "contribution", "radius_state": "balanced" }, "target": "R4_SHARED_STEADINESS" },
+        { "when": { "locus_state": "victim", "orientation_state": "contribution", "radius_state": "altrocentrism" }, "target": "R4_SHARED_STEADINESS" },
+        { "when": { "locus_state": "balanced", "orientation_state": "entitlement", "radius_state": "self_centrism" }, "target": "R2_RECIPROCAL_RESET" },
+        { "when": { "locus_state": "balanced", "orientation_state": "entitlement", "radius_state": "balanced" }, "target": "R2_RECIPROCAL_RESET" },
+        { "when": { "locus_state": "balanced", "orientation_state": "entitlement", "radius_state": "altrocentrism" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+        { "when": { "locus_state": "balanced", "orientation_state": "balanced", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+        { "when": { "locus_state": "balanced", "orientation_state": "balanced", "radius_state": "balanced" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+        { "when": { "locus_state": "balanced", "orientation_state": "balanced", "radius_state": "altrocentrism" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+        { "when": { "locus_state": "balanced", "orientation_state": "contribution", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+        { "when": { "locus_state": "balanced", "orientation_state": "contribution", "radius_state": "balanced" }, "target": "R4_SHARED_STEADINESS" },
+        { "when": { "locus_state": "balanced", "orientation_state": "contribution", "radius_state": "altrocentrism" }, "target": "R6_GENERATIVE_STEWARDSHIP" },
+        { "when": { "locus_state": "victor", "orientation_state": "entitlement", "radius_state": "self_centrism" }, "target": "R2_RECIPROCAL_RESET" },
+        { "when": { "locus_state": "victor", "orientation_state": "entitlement", "radius_state": "balanced" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+        { "when": { "locus_state": "victor", "orientation_state": "entitlement", "radius_state": "altrocentrism" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+        { "when": { "locus_state": "victor", "orientation_state": "balanced", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+        { "when": { "locus_state": "victor", "orientation_state": "balanced", "radius_state": "balanced" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+        { "when": { "locus_state": "victor", "orientation_state": "balanced", "radius_state": "altrocentrism" }, "target": "R6_GENERATIVE_STEWARDSHIP" },
+        { "when": { "locus_state": "victor", "orientation_state": "contribution", "radius_state": "self_centrism" }, "target": "R4_SHARED_STEADINESS" },
+        { "when": { "locus_state": "victor", "orientation_state": "contribution", "radius_state": "balanced" }, "target": "R6_GENERATIVE_STEWARDSHIP" },
+        { "when": { "locus_state": "victor", "orientation_state": "contribution", "radius_state": "altrocentrism" }, "target": "R6_GENERATIVE_STEWARDSHIP" }
+      ]
+    },
+    {
+      "id": "R1_STABILIZE_AGENCY",
+      "type": "reflection",
+      "text": "When life feels narrow, steadiness can begin with one controllable move. Quiet progress is still progress.",
+      "target": "Q4_CLOSE_STEP"
+    },
+    {
+      "id": "R2_RECIPROCAL_RESET",
+      "type": "reflection",
+      "text": "Reciprocity works best when expectations are visible. Clarity often reduces tension faster than intensity.",
+      "target": "Q4_CLOSE_STEP"
+    },
+    {
+      "id": "R3_GROUNDED_BOUNDARIES",
+      "type": "reflection",
+      "text": "Boundaries and contribution can coexist. A calm boundary often protects quality, not just energy.",
+      "target": "Q4_CLOSE_STEP"
+    },
+    {
+      "id": "R4_SHARED_STEADINESS",
+      "type": "reflection",
+      "text": "Sustainable momentum comes from shared load. Name one step, one partner, and one handoff.",
+      "target": "Q4_CLOSE_STEP"
+    },
+    {
+      "id": "R5_SYSTEMS_RECIPROCITY",
+      "type": "reflection",
+      "text": "Fair exchange strengthens systems over time. Small, explicit agreements compound into trust.",
+      "target": "Q4_CLOSE_STEP"
+    },
+    {
+      "id": "R6_GENERATIVE_STEWARDSHIP",
+      "type": "reflection",
+      "text": "You are balancing agency with wider impact. Keep it durable by matching ambition to a realistic cadence.",
+      "target": "Q4_CLOSE_STEP"
+    },
+    {
+      "id": "Q4_CLOSE_STEP",
+      "type": "question",
+      "axis": "closure",
+      "state_key": "close_step_style",
+      "prompt": "What closing step style fits best for the next 24 hours?",
+      "options": [
+        { "id": "quiet_commitment", "label": "One quiet commitment", "target": "D5_CLOSING_ROUTE" },
+        { "id": "shared_alignment", "label": "One explicit alignment message", "target": "D5_CLOSING_ROUTE" },
+        { "id": "small_experiment", "label": "One reversible experiment", "target": "D5_CLOSING_ROUTE" }
+      ]
+    },
+    {
+      "id": "D5_CLOSING_ROUTE",
+      "type": "decision",
+      "input": ["close_step_style"],
+      "mappings": [
+        { "when": { "close_step_style": "quiet_commitment" }, "target": "SUMMARY" },
+        { "when": { "close_step_style": "shared_alignment" }, "target": "SUMMARY" },
+        { "when": { "close_step_style": "small_experiment" }, "target": "SUMMARY" }
+      ]
+    },
+    {
+      "id": "SUMMARY",
+      "type": "summary",
+      "template": {
+        "lines": [
+          "Locus: {locus_state}",
+          "Orientation: {orientation_state}",
+          "Radius: {radius_state}",
+          "Closing style: {close_step_style}"
+        ],
+        "closing": "Choose one concrete action in the next day and keep it observable."
+      },
+      "target": "END"
+    },
+    {
+      "id": "END",
+      "type": "end"
+    }
+  ]
+}

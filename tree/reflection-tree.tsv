@@ -1,0 +1,113 @@
+row_type	node_id	node_type	parent_id	axis	state_key	option_or_rule_key	label_or_rule	target	set_values
+node	START	start			START			Q0_CHECKIN	
+node	Q0_CHECKIN	question	START	prelude	checkin_state		Before we begin, what best matches your present pace?		
+option	Q0_CHECKIN	question	Q0_CHECKIN	prelude	checkin_state	compressed	Compressed and reactive	D0_CHECKIN_ROUTER	
+option	Q0_CHECKIN	question	Q0_CHECKIN	prelude	checkin_state	steady	Steady and workable	D0_CHECKIN_ROUTER	
+option	Q0_CHECKIN	question	Q0_CHECKIN	prelude	checkin_state	open	Open and exploratory	D0_CHECKIN_ROUTER	
+node	D0_CHECKIN_ROUTER	decision	Q0_CHECKIN				Route by checkin_state		
+map	D0_CHECKIN_ROUTER	decision	D0_CHECKIN_ROUTER		checkin_state	checkin_state=compressed		B0_GROUNDING	
+map	D0_CHECKIN_ROUTER	decision	D0_CHECKIN_ROUTER		checkin_state	checkin_state=steady		B0_STABILITY	
+map	D0_CHECKIN_ROUTER	decision	D0_CHECKIN_ROUTER		checkin_state	checkin_state=open		B0_EXPANSION	
+node	B0_GROUNDING	bridge	D0_CHECKIN_ROUTER			We will keep this concise and concrete.	Q1_LOCUS_PRIMARY	
+node	B0_STABILITY	bridge	D0_CHECKIN_ROUTER			We will build from what is already working.	Q1_LOCUS_PRIMARY	
+node	B0_EXPANSION	bridge	D0_CHECKIN_ROUTER			We will use this window to refine direction.	Q1_LOCUS_PRIMARY	
+node	Q1_LOCUS_PRIMARY	question	B0_GROUNDING	locus	locus_primary		Under pressure, where does your attention go first?		
+option	Q1_LOCUS_PRIMARY	question	Q1_LOCUS_PRIMARY	locus	locus_primary	outside_forces	Toward forces outside my control	Q1B_LOCUS_WINDOW	
+option	Q1_LOCUS_PRIMARY	question	Q1_LOCUS_PRIMARY	locus	locus_primary	shared_influence	Toward shared influence and constraints	Q1B_LOCUS_WINDOW	
+option	Q1_LOCUS_PRIMARY	question	Q1_LOCUS_PRIMARY	locus	locus_primary	next_action	Toward the next action I can take	Q1B_LOCUS_WINDOW	
+node	Q1B_LOCUS_WINDOW	question	Q1_LOCUS_PRIMARY	locus	locus_window		How stable is that stance across a typical week?		
+option	Q1B_LOCUS_WINDOW	question	Q1B_LOCUS_WINDOW	locus	locus_window	mostly	Mostly stable	D1_LOCUS_CLASSIFIER	
+option	Q1B_LOCUS_WINDOW	question	Q1B_LOCUS_WINDOW	locus	locus_window	mixed	Mixed by context	D1_LOCUS_CLASSIFIER	
+option	Q1B_LOCUS_WINDOW	question	Q1B_LOCUS_WINDOW	locus	locus_window	shifting	Shifts day to day	D1_LOCUS_CLASSIFIER	
+node	D1_LOCUS_CLASSIFIER	decision	Q1B_LOCUS_WINDOW		locus_primary|locus_window		Route to locus_state		
+map	D1_LOCUS_CLASSIFIER	decision	D1_LOCUS_CLASSIFIER		locus_primary|locus_window	outside_forces|mostly		B1_LOCUS_TO_ORIENTATION	locus_state=victim
+map	D1_LOCUS_CLASSIFIER	decision	D1_LOCUS_CLASSIFIER		locus_primary|locus_window	outside_forces|mixed		B1_LOCUS_TO_ORIENTATION	locus_state=victim
+map	D1_LOCUS_CLASSIFIER	decision	D1_LOCUS_CLASSIFIER		locus_primary|locus_window	outside_forces|shifting		B1_LOCUS_TO_ORIENTATION	locus_state=balanced
+map	D1_LOCUS_CLASSIFIER	decision	D1_LOCUS_CLASSIFIER		locus_primary|locus_window	shared_influence|mostly		B1_LOCUS_TO_ORIENTATION	locus_state=balanced
+map	D1_LOCUS_CLASSIFIER	decision	D1_LOCUS_CLASSIFIER		locus_primary|locus_window	shared_influence|mixed		B1_LOCUS_TO_ORIENTATION	locus_state=balanced
+map	D1_LOCUS_CLASSIFIER	decision	D1_LOCUS_CLASSIFIER		locus_primary|locus_window	shared_influence|shifting		B1_LOCUS_TO_ORIENTATION	locus_state=balanced
+map	D1_LOCUS_CLASSIFIER	decision	D1_LOCUS_CLASSIFIER		locus_primary|locus_window	next_action|mostly		B1_LOCUS_TO_ORIENTATION	locus_state=victor
+map	D1_LOCUS_CLASSIFIER	decision	D1_LOCUS_CLASSIFIER		locus_primary|locus_window	next_action|mixed		B1_LOCUS_TO_ORIENTATION	locus_state=victor
+map	D1_LOCUS_CLASSIFIER	decision	D1_LOCUS_CLASSIFIER		locus_primary|locus_window	next_action|shifting		B1_LOCUS_TO_ORIENTATION	locus_state=balanced
+node	B1_LOCUS_TO_ORIENTATION	bridge	D1_LOCUS_CLASSIFIER			Now we shift from agency to contribution stance.	Q2_ORIENTATION_PRIMARY	
+node	Q2_ORIENTATION_PRIMARY	question	B1_LOCUS_TO_ORIENTATION	orientation	orientation_primary		In shared work, what is your first internal question?		
+option	Q2_ORIENTATION_PRIMARY	question	Q2_ORIENTATION_PRIMARY	orientation	orientation_primary	how_can_i_help	How can I reduce friction here?	Q2B_ORIENTATION_BALANCE	
+option	Q2_ORIENTATION_PRIMARY	question	Q2_ORIENTATION_PRIMARY	orientation	orientation_primary	what_is_fair	What is fair for all involved?	Q2B_ORIENTATION_BALANCE	
+option	Q2_ORIENTATION_PRIMARY	question	Q2_ORIENTATION_PRIMARY	orientation	orientation_primary	what_is_owed	What is owed before I extend more effort?	Q2B_ORIENTATION_BALANCE	
+node	Q2B_ORIENTATION_BALANCE	question	Q2_ORIENTATION_PRIMARY	orientation	orientation_balance		When resources are tight, how do you usually respond?		
+option	Q2B_ORIENTATION_BALANCE	question	Q2B_ORIENTATION_BALANCE	orientation	orientation_balance	lean_in	Lean in with bounded support	D2_ORIENTATION_CLASSIFIER	
+option	Q2B_ORIENTATION_BALANCE	question	Q2B_ORIENTATION_BALANCE	orientation	orientation_balance	recalibrate	Recalibrate expectations first	D2_ORIENTATION_CLASSIFIER	
+option	Q2B_ORIENTATION_BALANCE	question	Q2B_ORIENTATION_BALANCE	orientation	orientation_balance	hold_line	Hold the line on reciprocity	D2_ORIENTATION_CLASSIFIER	
+node	D2_ORIENTATION_CLASSIFIER	decision	Q2B_ORIENTATION_BALANCE		orientation_primary|orientation_balance		Route to orientation_state		
+map	D2_ORIENTATION_CLASSIFIER	decision	D2_ORIENTATION_CLASSIFIER		orientation_primary|orientation_balance	how_can_i_help|lean_in		B2_ORIENTATION_TO_RADIUS	orientation_state=contribution
+map	D2_ORIENTATION_CLASSIFIER	decision	D2_ORIENTATION_CLASSIFIER		orientation_primary|orientation_balance	how_can_i_help|recalibrate		B2_ORIENTATION_TO_RADIUS	orientation_state=contribution
+map	D2_ORIENTATION_CLASSIFIER	decision	D2_ORIENTATION_CLASSIFIER		orientation_primary|orientation_balance	how_can_i_help|hold_line		B2_ORIENTATION_TO_RADIUS	orientation_state=balanced
+map	D2_ORIENTATION_CLASSIFIER	decision	D2_ORIENTATION_CLASSIFIER		orientation_primary|orientation_balance	what_is_fair|lean_in		B2_ORIENTATION_TO_RADIUS	orientation_state=balanced
+map	D2_ORIENTATION_CLASSIFIER	decision	D2_ORIENTATION_CLASSIFIER		orientation_primary|orientation_balance	what_is_fair|recalibrate		B2_ORIENTATION_TO_RADIUS	orientation_state=balanced
+map	D2_ORIENTATION_CLASSIFIER	decision	D2_ORIENTATION_CLASSIFIER		orientation_primary|orientation_balance	what_is_fair|hold_line		B2_ORIENTATION_TO_RADIUS	orientation_state=balanced
+map	D2_ORIENTATION_CLASSIFIER	decision	D2_ORIENTATION_CLASSIFIER		orientation_primary|orientation_balance	what_is_owed|lean_in		B2_ORIENTATION_TO_RADIUS	orientation_state=balanced
+map	D2_ORIENTATION_CLASSIFIER	decision	D2_ORIENTATION_CLASSIFIER		orientation_primary|orientation_balance	what_is_owed|recalibrate		B2_ORIENTATION_TO_RADIUS	orientation_state=entitlement
+map	D2_ORIENTATION_CLASSIFIER	decision	D2_ORIENTATION_CLASSIFIER		orientation_primary|orientation_balance	what_is_owed|hold_line		B2_ORIENTATION_TO_RADIUS	orientation_state=entitlement
+node	B2_ORIENTATION_TO_RADIUS	bridge	D2_ORIENTATION_CLASSIFIER			Finally we look at the scope of concern around each choice.	Q3_RADIUS_PRIMARY	
+node	Q3_RADIUS_PRIMARY	question	B2_ORIENTATION_TO_RADIUS	radius	radius_primary		Who is centered most in your next decision?		
+option	Q3_RADIUS_PRIMARY	question	Q3_RADIUS_PRIMARY	radius	radius_primary	self_protection	Primarily my own position	Q3B_RADIUS_HORIZON	
+option	Q3_RADIUS_PRIMARY	question	Q3_RADIUS_PRIMARY	radius	radius_primary	near_circle	My needs and immediate counterparts	Q3B_RADIUS_HORIZON	
+option	Q3_RADIUS_PRIMARY	question	Q3_RADIUS_PRIMARY	radius	radius_primary	system_impact	My needs plus wider system impact	Q3B_RADIUS_HORIZON	
+node	Q3B_RADIUS_HORIZON	question	Q3_RADIUS_PRIMARY	radius	radius_horizon		How far ahead do you usually evaluate downstream effects?		
+option	Q3B_RADIUS_HORIZON	question	Q3B_RADIUS_HORIZON	radius	radius_horizon	today	Today and immediate risk	D3_RADIUS_CLASSIFIER	
+option	Q3B_RADIUS_HORIZON	question	Q3B_RADIUS_HORIZON	radius	radius_horizon	this_week	This week and near consequences	D3_RADIUS_CLASSIFIER	
+option	Q3B_RADIUS_HORIZON	question	Q3B_RADIUS_HORIZON	radius	radius_horizon	multi_step	Several steps ahead	D3_RADIUS_CLASSIFIER	
+node	D3_RADIUS_CLASSIFIER	decision	Q3B_RADIUS_HORIZON		radius_primary|radius_horizon		Route to radius_state		
+map	D3_RADIUS_CLASSIFIER	decision	D3_RADIUS_CLASSIFIER		radius_primary|radius_horizon	self_protection|today		D4_REFLECTION_SELECTOR	radius_state=self_centrism
+map	D3_RADIUS_CLASSIFIER	decision	D3_RADIUS_CLASSIFIER		radius_primary|radius_horizon	self_protection|this_week		D4_REFLECTION_SELECTOR	radius_state=self_centrism
+map	D3_RADIUS_CLASSIFIER	decision	D3_RADIUS_CLASSIFIER		radius_primary|radius_horizon	self_protection|multi_step		D4_REFLECTION_SELECTOR	radius_state=balanced
+map	D3_RADIUS_CLASSIFIER	decision	D3_RADIUS_CLASSIFIER		radius_primary|radius_horizon	near_circle|today		D4_REFLECTION_SELECTOR	radius_state=balanced
+map	D3_RADIUS_CLASSIFIER	decision	D3_RADIUS_CLASSIFIER		radius_primary|radius_horizon	near_circle|this_week		D4_REFLECTION_SELECTOR	radius_state=balanced
+map	D3_RADIUS_CLASSIFIER	decision	D3_RADIUS_CLASSIFIER		radius_primary|radius_horizon	near_circle|multi_step		D4_REFLECTION_SELECTOR	radius_state=balanced
+map	D3_RADIUS_CLASSIFIER	decision	D3_RADIUS_CLASSIFIER		radius_primary|radius_horizon	system_impact|today		D4_REFLECTION_SELECTOR	radius_state=balanced
+map	D3_RADIUS_CLASSIFIER	decision	D3_RADIUS_CLASSIFIER		radius_primary|radius_horizon	system_impact|this_week		D4_REFLECTION_SELECTOR	radius_state=altrocentrism
+map	D3_RADIUS_CLASSIFIER	decision	D3_RADIUS_CLASSIFIER		radius_primary|radius_horizon	system_impact|multi_step		D4_REFLECTION_SELECTOR	radius_state=altrocentrism
+node	D4_REFLECTION_SELECTOR	decision	D3_RADIUS_CLASSIFIER		locus_state|orientation_state|radius_state		Route to reflection node		
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victim|entitlement|self_centrism		R1_STABILIZE_AGENCY	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victim|entitlement|balanced		R1_STABILIZE_AGENCY	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victim|entitlement|altrocentrism		R2_RECIPROCAL_RESET	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victim|balanced|self_centrism		R3_GROUNDED_BOUNDARIES	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victim|balanced|balanced		R3_GROUNDED_BOUNDARIES	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victim|balanced|altrocentrism		R4_SHARED_STEADINESS	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victim|contribution|self_centrism		R3_GROUNDED_BOUNDARIES	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victim|contribution|balanced		R4_SHARED_STEADINESS	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victim|contribution|altrocentrism		R4_SHARED_STEADINESS	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	balanced|entitlement|self_centrism		R2_RECIPROCAL_RESET	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	balanced|entitlement|balanced		R2_RECIPROCAL_RESET	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	balanced|entitlement|altrocentrism		R5_SYSTEMS_RECIPROCITY	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	balanced|balanced|self_centrism		R3_GROUNDED_BOUNDARIES	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	balanced|balanced|balanced		R5_SYSTEMS_RECIPROCITY	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	balanced|balanced|altrocentrism		R5_SYSTEMS_RECIPROCITY	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	balanced|contribution|self_centrism		R3_GROUNDED_BOUNDARIES	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	balanced|contribution|balanced		R4_SHARED_STEADINESS	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	balanced|contribution|altrocentrism		R6_GENERATIVE_STEWARDSHIP	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victor|entitlement|self_centrism		R2_RECIPROCAL_RESET	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victor|entitlement|balanced		R5_SYSTEMS_RECIPROCITY	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victor|entitlement|altrocentrism		R5_SYSTEMS_RECIPROCITY	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victor|balanced|self_centrism		R3_GROUNDED_BOUNDARIES	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victor|balanced|balanced		R5_SYSTEMS_RECIPROCITY	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victor|balanced|altrocentrism		R6_GENERATIVE_STEWARDSHIP	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victor|contribution|self_centrism		R4_SHARED_STEADINESS	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victor|contribution|balanced		R6_GENERATIVE_STEWARDSHIP	
+map	D4_REFLECTION_SELECTOR	decision	D4_REFLECTION_SELECTOR		locus_state|orientation_state|radius_state	victor|contribution|altrocentrism		R6_GENERATIVE_STEWARDSHIP	
+node	R1_STABILIZE_AGENCY	reflection	D4_REFLECTION_SELECTOR			When life feels narrow, steadiness can begin with one controllable move. Quiet progress is still progress.	Q4_CLOSE_STEP	
+node	R2_RECIPROCAL_RESET	reflection	D4_REFLECTION_SELECTOR			Reciprocity works best when expectations are visible. Clarity often reduces tension faster than intensity.	Q4_CLOSE_STEP	
+node	R3_GROUNDED_BOUNDARIES	reflection	D4_REFLECTION_SELECTOR			Boundaries and contribution can coexist. A calm boundary often protects quality, not just energy.	Q4_CLOSE_STEP	
+node	R4_SHARED_STEADINESS	reflection	D4_REFLECTION_SELECTOR			Sustainable momentum comes from shared load. Name one step, one partner, and one handoff.	Q4_CLOSE_STEP	
+node	R5_SYSTEMS_RECIPROCITY	reflection	D4_REFLECTION_SELECTOR			Fair exchange strengthens systems over time. Small, explicit agreements compound into trust.	Q4_CLOSE_STEP	
+node	R6_GENERATIVE_STEWARDSHIP	reflection	D4_REFLECTION_SELECTOR			You are balancing agency with wider impact. Keep it durable by matching ambition to a realistic cadence.	Q4_CLOSE_STEP	
+node	Q4_CLOSE_STEP	question	R1_STABILIZE_AGENCY	closure	close_step_style		What closing step style fits best for the next 24 hours?		
+option	Q4_CLOSE_STEP	question	Q4_CLOSE_STEP	closure	close_step_style	quiet_commitment	One quiet commitment	D5_CLOSING_ROUTE	
+option	Q4_CLOSE_STEP	question	Q4_CLOSE_STEP	closure	close_step_style	shared_alignment	One explicit alignment message	D5_CLOSING_ROUTE	
+option	Q4_CLOSE_STEP	question	Q4_CLOSE_STEP	closure	close_step_style	small_experiment	One reversible experiment	D5_CLOSING_ROUTE	
+node	D5_CLOSING_ROUTE	decision	Q4_CLOSE_STEP		close_step_style		Route by closing step style		
+map	D5_CLOSING_ROUTE	decision	D5_CLOSING_ROUTE		close_step_style	close_step_style=quiet_commitment		SUMMARY	
+map	D5_CLOSING_ROUTE	decision	D5_CLOSING_ROUTE		close_step_style	close_step_style=shared_alignment		SUMMARY	
+map	D5_CLOSING_ROUTE	decision	D5_CLOSING_ROUTE		close_step_style	close_step_style=small_experiment		SUMMARY	
+node	SUMMARY	summary	D5_CLOSING_ROUTE			Locus: {locus_state}; Orientation: {orientation_state}; Radius: {radius_state}; Closing style: {close_step_style}	END	
+node	END	end	SUMMARY				END	

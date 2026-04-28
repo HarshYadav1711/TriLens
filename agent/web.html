@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TriLens Reflection</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #d1d5db;
+      --accent: #1d4ed8;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.04);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 1.4rem;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+    }
+    .prompt {
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+    button.option {
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 10px;
+      padding: 11px 12px;
+      cursor: pointer;
+      color: var(--text);
+    }
+    button.option:hover {
+      border-color: var(--accent);
+    }
+    .path {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .result {
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      display: none;
+    }
+    .error {
+      color: #991b1b;
+      font-weight: 600;
+    }
+    .restart {
+      margin-top: 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>TriLens Deterministic Reflection</h1>
+      <div class="meta">Fixed options only. No free text. No runtime AI.</div>
+      <div id="app"></div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      tree: null,
+      nodeMap: new Map(),
+      answers: {},
+      currentNodeId: null
+    };
+
+    const app = document.getElementById("app");
+
+    function pathKey(answers) {
+      return [answers.locus, answers.orientation, answers.radius].join("|");
+    }
+
+    function profileIndex(tree) {
+      const map = new Map();
+      tree.leaf_profiles.forEach((p) => {
+        const k = [p.path.locus, p.path.orientation, p.path.radius].join("|");
+        map.set(k, p);
+      });
+      return map;
+    }
+
+    function nextNodeIdFromAxisOrder(tree, currentAxis) {
+      const i = tree.axes_order.indexOf(currentAxis);
+      const nextAxis = tree.axes_order[i + 1];
+      const nextNode = tree.nodes.find((n) => n.axis === nextAxis);
+      return nextNode ? nextNode.id : null;
+    }
+
+    function renderQuestion(node) {
+      app.innerHTML = "";
+      const prompt = document.createElement("div");
+      prompt.className = "prompt";
+      prompt.textContent = `${node.axis.toUpperCase()}: ${node.prompt}`;
+      app.appendChild(prompt);
+
+      const options = document.createElement("div");
+      options.className = "options";
+
+      node.options.forEach((opt) => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.type = "button";
+        btn.textContent = `${opt.label} [${opt.id}]`;
+        btn.addEventListener("click", () => {
+          state.answers[node.axis] = opt.id;
+          if (opt.next === "END") {
+            renderResult();
+            return;
+          }
+          state.currentNodeId = nextNodeIdFromAxisOrder(state.tree, node.axis);
+          renderCurrent();
+        });
+        options.appendChild(btn);
+      });
+      app.appendChild(options);
+      renderPath();
+    }
+
+    function renderPath() {
+      const p = document.createElement("div");
+      p.className = "path";
+      const a = state.answers;
+      p.textContent = `Path so far: locus=${a.locus || "-"} -> orientation=${a.orientation || "-"} -> radius=${a.radius || "-"}`;
+      app.appendChild(p);
+    }
+
+    function renderResult() {
+      app.innerHTML = "";
+      const idx = profileIndex(state.tree);
+      const key = pathKey(state.answers);
+      const profile = idx.get(key);
+      if (!profile) {
+        app.innerHTML = `<div class="error">Tree/profile mismatch for path: ${key}</div>`;
+        return;
+      }
+
+      const result = document.createElement("div");
+      result.className = "result";
+      result.style.display = "block";
+      result.innerHTML = `
+        <div><strong>Path:</strong> locus=${state.answers.locus} -> orientation=${state.answers.orientation} -> radius=${state.answers.radius}</div>
+        <div style="margin-top:8px;"><strong>Profile:</strong> ${profile.title} (${profile.id})</div>
+        <div style="margin-top:8px;"><strong>Reflection:</strong> ${profile.reflection}</div>
+        <div style="margin-top:8px;"><strong>Suggested next micro-step:</strong> Choose one concrete action in the next 24 hours that matches this stance.</div>
+      `;
+      app.appendChild(result);
+
+      const restart = document.createElement("button");
+      restart.className = "restart";
+      restart.textContent = "Start again";
+      restart.addEventListener("click", startRun);
+      app.appendChild(restart);
+    }
+
+    function renderCurrent() {
+      const node = state.nodeMap.get(state.currentNodeId);
+      if (!node) {
+        app.innerHTML = `<div class="error">Missing node: ${state.currentNodeId}</div>`;
+        return;
+      }
+      renderQuestion(node);
+    }
+
+    function startRun() {
+      state.answers = {};
+      state.currentNodeId = state.tree.start_node_id;
+      renderCurrent();
+    }
+
+    async function init() {
+      try {
+        const res = await fetch("../tree/reflection-tree.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`Unable to load tree JSON (${res.status})`);
+        state.tree = await res.json();
+        state.tree.nodes.forEach((n) => state.nodeMap.set(n.id, n));
+        startRun();
+      } catch (err) {
+        app.innerHTML = `<div class="error">${String(err.message || err)}</div>
+          <div class="path">Tip: serve this directory with a local static server so the browser can load ../tree/reflection-tree.json.</div>`;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
