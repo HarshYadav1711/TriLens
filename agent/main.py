@@ -15,6 +15,7 @@ import json
 import re
 import sys
 from collections import Counter, defaultdict
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -213,7 +214,48 @@ def choose_summary_variant(axis_dominant: Dict[str, str]) -> List[str]:
     ]
 
 
-def run(tree: Dict[str, Any]) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, str]]:
+def export_transcript(
+    question_log: List[Dict[str, str]],
+    summary_lines: List[str],
+    axis_dominant: Dict[str, str],
+) -> Path:
+    root = Path(__file__).resolve().parents[1]
+    out_dir = root / "transcripts"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    out_path = out_dir / f"run-{stamp}.md"
+
+    lines: List[str] = [
+        "# TriLens Run Transcript",
+        "",
+        f"- Timestamp: {datetime.now().isoformat(timespec='seconds')}",
+        f"- Dominant axis states: locus={axis_dominant.get('locus', 'unknown')}, "
+        f"orientation={axis_dominant.get('orientation', 'unknown')}, "
+        f"radius={axis_dominant.get('radius', 'unknown')}",
+        "",
+        "## Questions and selections",
+        "",
+    ]
+    for idx, item in enumerate(question_log, start=1):
+        lines.extend(
+            [
+                f"{idx}. **{item['axis'].upper()}** `{item['node_id']}`",
+                f"   - Question: {item['prompt']}",
+                f"   - Selected: {item['option_label']} (`{item['option_id']}`)",
+                "",
+            ]
+        )
+
+    lines.extend(["## Final summary", ""])
+    for line in summary_lines:
+        lines.append(f"- {line}")
+    lines.append("")
+
+    out_path.write_text("\n".join(lines), encoding="utf-8")
+    return out_path
+
+
+def run(tree: Dict[str, Any]) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, str], List[Dict[str, str]], List[str]]:
     node_map = build_node_map(tree)
     start_id = tree.get("start_node_id")
     if not start_id or start_id not in node_map:
@@ -222,6 +264,8 @@ def run(tree: Dict[str, Any]) -> Tuple[Dict[str, str], Dict[str, str], Dict[str,
     answers_by_node: Dict[str, str] = {}
     state: Dict[str, str] = {}
     axis_signals: Dict[str, List[str]] = defaultdict(list)
+    question_log: List[Dict[str, str]] = []
+    summary_output: List[str] = []
 
     current_id = start_id
     visited_count = 0
@@ -252,6 +296,15 @@ def run(tree: Dict[str, Any]) -> Tuple[Dict[str, str], Dict[str, str], Dict[str,
         if node_type == "question":
             selected = choose_option(node)
             answers_by_node[node["id"]] = selected["id"]
+            question_log.append(
+                {
+                    "node_id": node["id"],
+                    "axis": str(node.get("axis", "question")),
+                    "prompt": str(node.get("prompt", "")),
+                    "option_id": str(selected.get("id", "")),
+                    "option_label": str(selected.get("label", "")),
+                }
+            )
             if node.get("state_key"):
                 state[node["state_key"]] = selected["id"]
                 axis = node.get("axis")
@@ -301,13 +354,19 @@ def run(tree: Dict[str, Any]) -> Tuple[Dict[str, str], Dict[str, str], Dict[str,
 
             print("\nSummary:")
             for line in choose_summary_variant(axis_dominant):
-                print(f"- {interpolate(line, state)}")
+                rendered = interpolate(line, state)
+                summary_output.append(rendered)
+                print(f"- {rendered}")
             for line in lines:
                 if not isinstance(line, str):
                     raise TreeRuntimeError(f"Summary node '{current_id}' includes non-string line.")
-                print(f"- {interpolate(line, state)}")
+                rendered = interpolate(line, state)
+                summary_output.append(rendered)
+                print(f"- {rendered}")
             if isinstance(closing, str) and closing.strip():
-                print(f"- {interpolate(closing, state)}")
+                rendered = interpolate(closing, state)
+                summary_output.append(rendered)
+                print(f"- {rendered}")
 
             target = node.get("target")
             if not target:
@@ -322,7 +381,7 @@ def run(tree: Dict[str, Any]) -> Tuple[Dict[str, str], Dict[str, str], Dict[str,
                 "Dominant axis states: "
                 + ", ".join(f"{k}={v}" for k, v in axis_dominant.items())
             )
-            return answers_by_node, state, axis_dominant
+            return answers_by_node, state, axis_dominant, question_log, summary_output
 
         raise TreeRuntimeError(f"Unsupported node type '{node_type}' in node '{current_id}'.")
 
@@ -331,7 +390,9 @@ def main() -> int:
     try:
         tree_path = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else None
         tree = load_tree(tree_path)
-        run(tree)
+        _, _, axis_dominant, question_log, summary_output = run(tree)
+        transcript_path = export_transcript(question_log, summary_output, axis_dominant)
+        print(f"Transcript saved: {transcript_path}")
         return 0
     except FileNotFoundError as exc:
         print(f"ERROR: tree file not found: {exc}")
