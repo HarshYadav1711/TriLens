@@ -165,6 +165,30 @@ def choose_summary_variant(axis_dominant: Dict[str, str]) -> List[str]:
             "You are carrying pressure while protecting your own footing.",
             "A stabilizing next step is one concrete action that restores agency before negotiating expectations."
         ],
+        ("victim", "balanced", "balanced"): [
+            "You seem to be navigating constraints while still trying to keep things fair.",
+            "A useful move now is to make one practical request and pair it with one concrete contribution."
+        ],
+        ("victim", "contribution", "altrocentrism"): [
+            "You are still showing up for others even while things feel constrained.",
+            "Protect durability by sharing load explicitly and choosing one bounded action for today."
+        ],
+        ("balanced", "entitlement", "self_centrism"): [
+            "You are balancing context carefully, with strong attention to reciprocity and self-protection.",
+            "Clarity can help here: name what you need, then state what you will contribute next."
+        ],
+        ("balanced", "balanced", "altrocentrism"): [
+            "You are holding multiple perspectives without losing practical focus.",
+            "Keep momentum by turning that perspective into one visible agreement with clear ownership."
+        ],
+        ("balanced", "contribution", "balanced"): [
+            "Your stance combines steadiness with a bias toward contribution.",
+            "To keep it sustainable, set a clear boundary around scope and timeline."
+        ],
+        ("victor", "entitlement", "balanced"): [
+            "You are action-oriented and clear about exchange, with awareness beyond your own position.",
+            "A strong next step is to make expectations explicit and commit to one shared milestone."
+        ],
         ("victor", "contribution", "altrocentrism"): [
             "You are pairing initiative with a contribution mindset and a broad field of view.",
             "Sustain this by keeping one visible commitment and one clear boundary in the same window."
@@ -174,14 +198,14 @@ def choose_summary_variant(axis_dominant: Dict[str, str]) -> List[str]:
         return variants[pattern]
 
     fallback_by_locus = {
-        "victim": "The current stance suggests constrained agency; start with one controllable move.",
-        "balanced": "The current stance suggests a mixed agency window; clarity and pacing will help.",
-        "victor": "The current stance suggests active agency; convert momentum into steady execution.",
+        "victim": "Agency feels tight right now; begin with one controllable move you can complete today.",
+        "balanced": "You are working in a mixed-agency zone; clear priorities and pacing will help.",
+        "victor": "You have forward momentum; channel it into a steady, observable next step.",
     }
     fallback_by_orientation = {
-        "entitlement": "Keep expectations explicit so exchange stays workable.",
-        "balanced": "Hold reciprocity and contribution in view at the same time.",
-        "contribution": "Your contribution stance is a strength when paired with sustainable limits.",
+        "entitlement": "State expectations clearly so the exchange remains workable.",
+        "balanced": "Keep reciprocity and contribution visible at the same time.",
+        "contribution": "Your contribution mindset works best when paired with sustainable limits.",
     }
     return [
         fallback_by_locus.get(locus, "Use a small concrete step to create traction."),
