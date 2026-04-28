@@ -48,6 +48,14 @@ The system is not diagnostic and avoids moral labels; it frames current stance a
 - Kept reflections short and non-prescriptive to stay calm and reusable, at the cost of personalization depth.
 - Used deterministic summary variants instead of open generation to improve tone while keeping repeatability.
 
+### Why the final decision mapping looks large
+
+`D4_REFLECTION_SELECTOR` is large because it explicitly enumerates normalized axis combinations (`3 x 3 x 3`), not because of accidental complexity.
+Each row is a visible contract from one axis state triple to one reflection target.
+That explicit table keeps outcomes deterministic and inspectable without hidden fallback behavior.
+I kept this mapping in data instead of computing it at runtime so reviewers can audit routing directly.
+The size is intentional: it makes the decision surface readable and stable as language evolves.
+
 ## What I would improve with more time
 
 - Expand the summary variant library for more dominance combinations while staying deterministic.
