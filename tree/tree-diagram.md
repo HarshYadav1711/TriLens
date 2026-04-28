@@ -1,25 +1,51 @@
-# TriLens Reflection Tree Diagram
+# TriLens Tree Diagram
 
 ```mermaid
 flowchart TD
-    S([Start]) --> Q1{Axis 1: Locus}
-    Q1 -->|victim| Q2V{Axis 2: Orientation}
-    Q1 -->|victor| Q2R{Axis 2: Orientation}
+    START([START]) --> Q0[Q0_CHECKIN<br/>Question: prelude]
+    Q0 -->|compressed| D0{D0_CHECKIN_ROUTER}
+    Q0 -->|steady| D0
+    Q0 -->|open| D0
 
-    Q2V -->|contribution| Q3VC{Axis 3: Radius}
-    Q2V -->|entitlement| Q3VE{Axis 3: Radius}
-    Q2R -->|contribution| Q3RC{Axis 3: Radius}
-    Q2R -->|entitlement| Q3RE{Axis 3: Radius}
+    D0 --> B0G[B0_GROUNDING]
+    D0 --> B0S[B0_STABILITY]
+    D0 --> B0E[B0_EXPANSION]
+    B0G --> Q1
+    B0S --> Q1
+    B0E --> Q1
 
-    Q3VC -->|self_centrism| P3[P3 Strained Self-Reliance]
-    Q3VC -->|altrocentrism| P4[P4 Burdened Caretaking]
-    Q3VE -->|self_centrism| P1[P1 Protected Claiming]
-    Q3VE -->|altrocentrism| P2[P2 Collective Fairness Seeking]
-    Q3RC -->|self_centrism| P7[P7 Focused Ownership]
-    Q3RC -->|altrocentrism| P8[P8 Generative Stewardship]
-    Q3RE -->|self_centrism| P5[P5 Assertive Protection]
-    Q3RE -->|altrocentrism| P6[P6 Reciprocal Negotiation]
+    Q1[Q1_LOCUS_PRIMARY<br/>Axis 1: LOCUS] --> Q1B[Q1B_LOCUS_WINDOW]
+    Q1B --> D1{D1_LOCUS_CLASSIFIER<br/>sets locus_state}
+    D1 --> B1[B1_LOCUS_TO_ORIENTATION]
+
+    B1 --> Q2[Q2_ORIENTATION_PRIMARY<br/>Axis 2: ORIENTATION]
+    Q2 --> Q2B[Q2B_ORIENTATION_BALANCE]
+    Q2B --> D2{D2_ORIENTATION_CLASSIFIER<br/>sets orientation_state}
+    D2 --> B2[B2_ORIENTATION_TO_RADIUS]
+
+    B2 --> Q3[Q3_RADIUS_PRIMARY<br/>Axis 3: RADIUS]
+    Q3 --> Q3B[Q3B_RADIUS_HORIZON]
+    Q3B --> D3{D3_RADIUS_CLASSIFIER<br/>sets radius_state}
+    D3 --> D4{D4_REFLECTION_SELECTOR}
+
+    D4 --> R1[R1_STABILIZE_AGENCY]
+    D4 --> R2[R2_RECIPROCAL_RESET]
+    D4 --> R3[R3_GROUNDED_BOUNDARIES]
+    D4 --> R4[R4_SHARED_STEADINESS]
+    D4 --> R5[R5_SYSTEMS_RECIPROCITY]
+    D4 --> R6[R6_GENERATIVE_STEWARDSHIP]
+
+    R1 --> Q4[Q4_CLOSE_STEP<br/>Question: closure]
+    R2 --> Q4
+    R3 --> Q4
+    R4 --> Q4
+    R5 --> Q4
+    R6 --> Q4
+
+    Q4 --> D5{D5_CLOSING_ROUTE}
+    D5 --> SUMMARY[[SUMMARY]]
+    SUMMARY --> END([END])
 ```
 
-The traversal order is fixed: Locus -> Orientation -> Radius.  
-Each complete path maps to exactly one profile.
+Traversal is fixed and deterministic.  
+Axis order is preserved as `locus -> orientation -> radius`, with bridge/decision nodes providing explicit, auditable routing.

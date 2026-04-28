@@ -1,47 +1,52 @@
 # TriLens
 
-TriLens is a deterministic reflection-tree submission.  
-The tree is the primary product; interfaces are lightweight traversal clients.
+TriLens is an offline, deterministic reflection system built around a structured decision tree.  
+The tree is the product; the CLI is a thin runtime that traverses it.
 
-## Deliverables
-- `tree/reflection-tree.json` - source-of-truth structured tree
-- `tree/reflection-tree.tsv` - auditable table view
-- `tree/tree-diagram.md` - Mermaid visualization
-- `agent/main.py` - Python CLI agent (standard library only)
-- `agent/web.html` - single-file browser UI (vanilla HTML/CSS/JS)
-- `transcripts/persona-1.md` - sample path transcript
-- `transcripts/persona-2.md` - sample path transcript
-- `write-up.md` - short design rationale
+## Why this exists
 
-## Constraints Satisfied
-- No LLM/API calls at runtime
-- No external APIs or paid services
-- No API keys, no billing dependencies
-- No free-text user input
-- Fully deterministic path traversal
-- Same answer path always returns same output
-- Tree data remains source of truth
-- No hardcoded branch logic in the agent
+Most reflection tools hide logic inside prompts or model behavior, which makes them hard to audit.  
+TriLens does the opposite:
+- keeps branching logic in plain data
+- uses fixed options only (no free-text interpretation)
+- guarantees that the same path always returns the same outcome
 
-## Run CLI
+## Repository layout
+
+- `tree/reflection-tree.json` - canonical source of truth
+- `tree/reflection-tree.tsv` - tabular mirror for inspection/review
+- `tree/tree-diagram.md` - full Mermaid flowchart
+- `agent/main.py` - offline CLI runtime (Python standard library only)
+- `agent/validate_tree.py` - structural validator for tree integrity
+- `agent/README.md` - runner-specific commands
+- `transcripts/persona-1.md` - low-agency/entitlement/self-centric sample run
+- `transcripts/persona-2.md` - high-agency/contribution/altrocentric sample run
+- `write-up.md` - design rationale and trade-offs
+
+## Core guarantees
+
+- Offline execution only
+- No runtime LLM/API calls
+- No external services, billing, or keys
+- Deterministic routing through explicit node targets and decision mappings
+- No hardcoded branch-specific logic in runtime code
+
+## Quick start
+
 From repo root:
 
 ```bash
+python agent/validate_tree.py
 python agent/main.py
 ```
 
-## Run Web UI
-Serve locally from the repository root (example using Python):
+Optional explicit tree path:
 
 ```bash
-python -m http.server 8000
+python agent/main.py tree/reflection-tree.json
 ```
 
-Then open:
-- [http://localhost:8000/agent/web.html](http://localhost:8000/agent/web.html)
+## Updating the system
 
-The page loads `../tree/reflection-tree.json` and traverses fixed options only.
-
-## Notes
-- This repository is intentionally minimal for auditability.
-- To update behavior, modify tree data files, not agent branching logic.
+To change behavior, edit tree data in `tree/reflection-tree.json`.  
+`agent/main.py` should remain generic: it handles node types, routing, and summary interpolation, not domain rules.

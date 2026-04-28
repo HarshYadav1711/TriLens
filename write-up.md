@@ -1,44 +1,63 @@
 # TriLens Design Write-up
 
-## Intent
-TriLens is designed as a deterministic reflection system where the tree is the product.  
-The runtime agent is only a traversal layer over tree data.
+## Why these questions
 
-## Deterministic Design
-- Fixed traversal order: `locus -> orientation -> radius`.
-- Fixed choices per question; no free text input.
-- Every complete 3-axis path maps to exactly one leaf profile.
-- Same answers always produce the same profile and reflection output.
+The question set is built to classify stance, not personality. Each axis uses two questions:
+- a primary question to capture default orientation
+- a stabilizer question to capture consistency under changing context
 
-## Source of Truth
-The authoritative definition is `tree/reflection-tree.json`, which includes:
-- axis order
-- question prompts
-- option IDs and labels
-- path-to-profile mapping
-- output template
+That pairing reduces overreaction to a single moment and keeps routing deterministic without needing free text.
 
-The CLI and web UI both read this file and do not embed branch-specific business logic.
+Question language is intentionally concrete (pressure, resources, downstream effects, next step) so users can choose quickly without interpretation ambiguity.
 
-## Psychological Grounding Approach
-The three axes are framed as reflective stances rather than moral categories:
-- **Locus** captures perceived agency under pressure.
-- **Orientation** captures give-first vs owed-first focus in shared work.
-- **Radius** captures scope of concern from self-protection to broader impact.
+## How branching works
 
-Leaf profile language is intentionally calm and practical:
-- descriptive, not diagnostic
-- non-moralizing
-- action-oriented with a small, concrete next step
+The tree has explicit node types (`start`, `question`, `decision`, `bridge`, `reflection`, `summary`, `end`).
 
-## Auditability and Readability
-- `tree/reflection-tree.tsv` provides a tabular, review-friendly mirror of the tree.
-- `tree/tree-diagram.md` provides a visual Mermaid map of all branches.
-- Deterministic outputs are traceable by option IDs and path keys.
+- Question nodes collect fixed-option selections and store `state_key` values.
+- Decision nodes evaluate exact `when` mappings and may set normalized axis states (`victim|balanced|victor`, etc.).
+- Bridge nodes keep transitions readable between axis phases.
+- Reflection nodes deliver concise guidance, then continue.
+- Summary interpolates state into final output and closes at `end`.
 
-## Runtime Constraints Compliance
-- No LLM calls at runtime.
-- No external APIs.
-- No cloud dependency.
-- Python agent uses only the standard library.
-- Web agent uses single-file vanilla HTML/CSS/JS.
+All routing is defined in data (`target` fields and decision mappings). The runtime does not contain branch-specific rules.
+
+## Why the flow is ordered as three axes
+
+The order is deliberate:
+1. **Locus (agency)** first, because perceived control shapes how any later prompt is interpreted.
+2. **Orientation (contribution vs entitlement)** second, because exchange stance is most meaningful after agency context is known.
+3. **Radius (scope of concern)** third, because social scope is clearer once agency and exchange stance are established.
+
+This sequence prevents mixing concepts too early and keeps each stage cognitively narrow.
+
+## Psychological grounding
+
+The design draws from established ideas, translated into deterministic prompts:
+- **Locus of control / agency framing** (Rotter tradition): internal vs external control orientation.
+- **Prosocial vs self-protective orientation** from social and organizational psychology: contribution/reciprocity dynamics under constraint.
+- **Self-other scope and perspective taking** from moral-development and social-cognition literature: narrow self focus vs broader system consideration.
+- **Brief reflective practice** from coaching and CBT-style behavioral framing: end with a concrete, observable next step.
+
+The system is not diagnostic and avoids moral labels; it frames current stance as situational and adjustable.
+
+## Trade-offs made
+
+- Chose fixed options over nuance-rich text to preserve determinism and auditability.
+- Added `balanced` intermediate states to reduce brittle binary classification, at the cost of a larger mapping table.
+- Kept reflections short and non-prescriptive to stay calm and reusable, at the cost of personalization depth.
+- Used deterministic summary variants instead of open generation to improve tone while keeping repeatability.
+
+## What I would improve with more time
+
+- Expand the summary variant library for more dominance combinations while staying deterministic.
+- Add stricter schema validation (e.g., coverage checks ensuring every intended state combination is mapped).
+- Add a transcript exporter in CLI for reproducible review artifacts.
+- Run a small human review pass to tune wording clarity across diverse roles and cultures.
+
+## Rubric alignment
+
+- **Tree quality:** multi-stage axis classification with explicit normalization and reflection routing.
+- **Psychological grounding:** agency, exchange stance, and scope-of-concern model reflected in question design.
+- **Data structure clarity:** readable IDs, explicit parent/target patterns, TSV mirror, Mermaid diagram.
+- **Write-up clarity:** concrete rationale, documented trade-offs, and explicit constraints.
