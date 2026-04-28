@@ -344,9 +344,9 @@
         optionsEl.appendChild(button);
       });
 
-      const axis = computeAxisDominance();
+      const axisState = computeAxisDominance();
       document.getElementById("meta").textContent =
-        `Current signals: locus=${axis.locus || "-"}, orientation=${axis.orientation || "-"}, radius=${axis.radius || "-"}`;
+        `Current signals: locus=${axisState.locus || "-"}, orientation=${axisState.orientation || "-"}, radius=${axisState.radius || "-"}`;
     }
 
     function renderReflection(node) {
