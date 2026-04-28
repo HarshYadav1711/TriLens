@@ -3,219 +3,646 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TriLens Reflection</title>
+  <title>TriLens</title>
   <style>
     :root {
-      --bg: #f6f7f9;
+      --bg: #f4f6fb;
       --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --line: #d1d5db;
-      --accent: #1d4ed8;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #dbe2ef;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --danger: #b91c1c;
     }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: var(--bg);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: linear-gradient(180deg, #f8faff 0%, #f4f6fb 100%);
       color: var(--text);
     }
-    .wrap {
-      max-width: 760px;
-      margin: 40px auto;
+    .shell {
+      max-width: 780px;
+      margin: 32px auto;
       padding: 0 16px;
     }
     .card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 22px;
-      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.04);
+      border-radius: 14px;
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
     }
-    h1 {
-      margin: 0 0 10px;
-      font-size: 1.4rem;
+    .head {
+      padding: 20px 22px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
     }
-    .meta {
+    .title {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+    }
+    .sub {
+      margin: 6px 0 0;
       color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 18px;
+      font-size: 0.92rem;
+    }
+    .body {
+      padding: 20px 22px 22px;
+    }
+    .chip {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
     .prompt {
-      font-weight: 600;
-      margin-bottom: 14px;
+      font-size: 1.02rem;
+      line-height: 1.45;
+      margin: 0 0 14px;
+      font-weight: 560;
     }
     .options {
       display: grid;
       gap: 10px;
     }
-    button.option {
+    .option {
+      width: 100%;
       text-align: left;
       border: 1px solid var(--line);
-      background: #fff;
       border-radius: 10px;
-      padding: 11px 12px;
-      cursor: pointer;
+      background: #fff;
       color: var(--text);
+      padding: 12px 13px;
+      cursor: pointer;
+      font: inherit;
+      line-height: 1.35;
+      transition: border-color .12s ease, background-color .12s ease, transform .08s ease;
     }
-    button.option:hover {
-      border-color: var(--accent);
+    .option:hover {
+      border-color: #93c5fd;
+      background: #f8fbff;
     }
-    .path {
+    .option:active {
+      transform: translateY(1px);
+    }
+    .meta {
       margin-top: 16px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-    .result {
-      margin-top: 12px;
+      padding-top: 12px;
       border-top: 1px solid var(--line);
-      padding-top: 14px;
-      display: none;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+    .block {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 13px;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    .block h3 {
+      margin: 0 0 8px;
+      font-size: 0.94rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .block p {
+      margin: 0;
+      line-height: 1.5;
+    }
+    .list {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.5;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 10px 14px;
+      font: inherit;
+      cursor: pointer;
+      background: #fff;
+    }
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
     }
     .error {
-      color: #991b1b;
+      color: var(--danger);
       font-weight: 600;
-    }
-    .restart {
-      margin-top: 14px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 14px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="shell">
     <div class="card">
-      <h1>TriLens Deterministic Reflection</h1>
-      <div class="meta">Fixed options only. No free text. No runtime AI.</div>
-      <div id="app"></div>
+      <div class="head">
+        <h1 class="title">TriLens</h1>
+        <p class="sub">Deterministic reflection flow. Fixed choices only. Offline-capable.</p>
+      </div>
+      <div class="body" id="app"></div>
     </div>
   </div>
 
   <script>
-    const state = {
-      tree: null,
-      nodeMap: new Map(),
-      answers: {},
-      currentNodeId: null
+    const EMBEDDED_TREE = {
+      "tree_id": "trilens-canonical-reflection-tree",
+      "version": "2.0.0",
+      "title": "TriLens Canonical Reflection Tree",
+      "description": "Deterministic, auditable reflection tree with fixed options and no runtime AI.",
+      "source_of_truth": "tree/reflection-tree.json",
+      "constraints": { "offline_only": true, "runtime_ai_calls": false, "free_text_input": false, "deterministic_paths": true },
+      "axis_sequence": ["locus", "orientation", "radius"],
+      "start_node_id": "START",
+      "nodes": [
+        { "id": "START", "type": "start", "target": "Q0_CHECKIN" },
+        {
+          "id": "Q0_CHECKIN", "type": "question", "axis": "prelude", "state_key": "checkin_state",
+          "prompt": "Before we begin, what best matches your present pace?",
+          "options": [
+            { "id": "compressed", "label": "Compressed and reactive", "target": "D0_CHECKIN_ROUTER" },
+            { "id": "steady", "label": "Steady and workable", "target": "D0_CHECKIN_ROUTER" },
+            { "id": "open", "label": "Open and exploratory", "target": "D0_CHECKIN_ROUTER" }
+          ]
+        },
+        {
+          "id": "D0_CHECKIN_ROUTER", "type": "decision", "input": ["checkin_state"],
+          "mappings": [
+            { "when": { "checkin_state": "compressed" }, "target": "B0_GROUNDING" },
+            { "when": { "checkin_state": "steady" }, "target": "B0_STABILITY" },
+            { "when": { "checkin_state": "open" }, "target": "B0_EXPANSION" }
+          ]
+        },
+        { "id": "B0_GROUNDING", "type": "bridge", "text": "We will keep this concise and concrete.", "target": "Q1_LOCUS_PRIMARY" },
+        { "id": "B0_STABILITY", "type": "bridge", "text": "We will build from what is already working.", "target": "Q1_LOCUS_PRIMARY" },
+        { "id": "B0_EXPANSION", "type": "bridge", "text": "We will use this window to refine direction.", "target": "Q1_LOCUS_PRIMARY" },
+        {
+          "id": "Q1_LOCUS_PRIMARY", "type": "question", "axis": "locus", "state_key": "locus_primary",
+          "prompt": "Under pressure, where does your attention go first?",
+          "options": [
+            { "id": "outside_forces", "label": "Toward forces outside my control", "target": "Q1B_LOCUS_WINDOW" },
+            { "id": "shared_influence", "label": "Toward shared influence and constraints", "target": "Q1B_LOCUS_WINDOW" },
+            { "id": "next_action", "label": "Toward the next action I can take", "target": "Q1B_LOCUS_WINDOW" }
+          ]
+        },
+        {
+          "id": "Q1B_LOCUS_WINDOW", "type": "question", "axis": "locus", "state_key": "locus_window",
+          "prompt": "How stable is that stance across a typical week?",
+          "options": [
+            { "id": "mostly", "label": "Mostly stable", "target": "D1_LOCUS_CLASSIFIER" },
+            { "id": "mixed", "label": "Mixed by context", "target": "D1_LOCUS_CLASSIFIER" },
+            { "id": "shifting", "label": "Shifts day to day", "target": "D1_LOCUS_CLASSIFIER" }
+          ]
+        },
+        {
+          "id": "D1_LOCUS_CLASSIFIER", "type": "decision", "input": ["locus_primary", "locus_window"],
+          "mappings": [
+            { "when": { "locus_primary": "outside_forces", "locus_window": "mostly" }, "set": { "locus_state": "victim" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+            { "when": { "locus_primary": "outside_forces", "locus_window": "mixed" }, "set": { "locus_state": "victim" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+            { "when": { "locus_primary": "outside_forces", "locus_window": "shifting" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+            { "when": { "locus_primary": "shared_influence", "locus_window": "mostly" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+            { "when": { "locus_primary": "shared_influence", "locus_window": "mixed" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+            { "when": { "locus_primary": "shared_influence", "locus_window": "shifting" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+            { "when": { "locus_primary": "next_action", "locus_window": "mostly" }, "set": { "locus_state": "victor" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+            { "when": { "locus_primary": "next_action", "locus_window": "mixed" }, "set": { "locus_state": "victor" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+            { "when": { "locus_primary": "next_action", "locus_window": "shifting" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" }
+          ]
+        },
+        { "id": "B1_LOCUS_TO_ORIENTATION", "type": "bridge", "text": "Now we shift from agency to contribution stance.", "target": "Q2_ORIENTATION_PRIMARY" },
+        {
+          "id": "Q2_ORIENTATION_PRIMARY", "type": "question", "axis": "orientation", "state_key": "orientation_primary",
+          "prompt": "In shared work, what is your first internal question?",
+          "options": [
+            { "id": "how_can_i_help", "label": "How can I reduce friction here?", "target": "Q2B_ORIENTATION_BALANCE" },
+            { "id": "what_is_fair", "label": "What is fair for all involved?", "target": "Q2B_ORIENTATION_BALANCE" },
+            { "id": "what_is_owed", "label": "What is owed before I extend more effort?", "target": "Q2B_ORIENTATION_BALANCE" }
+          ]
+        },
+        {
+          "id": "Q2B_ORIENTATION_BALANCE", "type": "question", "axis": "orientation", "state_key": "orientation_balance",
+          "prompt": "When resources are tight, how do you usually respond?",
+          "options": [
+            { "id": "lean_in", "label": "Lean in with bounded support", "target": "D2_ORIENTATION_CLASSIFIER" },
+            { "id": "recalibrate", "label": "Recalibrate expectations first", "target": "D2_ORIENTATION_CLASSIFIER" },
+            { "id": "hold_line", "label": "Hold the line on reciprocity", "target": "D2_ORIENTATION_CLASSIFIER" }
+          ]
+        },
+        {
+          "id": "D2_ORIENTATION_CLASSIFIER", "type": "decision", "input": ["orientation_primary", "orientation_balance"],
+          "mappings": [
+            { "when": { "orientation_primary": "how_can_i_help", "orientation_balance": "lean_in" }, "set": { "orientation_state": "contribution" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+            { "when": { "orientation_primary": "how_can_i_help", "orientation_balance": "recalibrate" }, "set": { "orientation_state": "contribution" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+            { "when": { "orientation_primary": "how_can_i_help", "orientation_balance": "hold_line" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+            { "when": { "orientation_primary": "what_is_fair", "orientation_balance": "lean_in" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+            { "when": { "orientation_primary": "what_is_fair", "orientation_balance": "recalibrate" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+            { "when": { "orientation_primary": "what_is_fair", "orientation_balance": "hold_line" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+            { "when": { "orientation_primary": "what_is_owed", "orientation_balance": "lean_in" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+            { "when": { "orientation_primary": "what_is_owed", "orientation_balance": "recalibrate" }, "set": { "orientation_state": "entitlement" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+            { "when": { "orientation_primary": "what_is_owed", "orientation_balance": "hold_line" }, "set": { "orientation_state": "entitlement" }, "target": "B2_ORIENTATION_TO_RADIUS" }
+          ]
+        },
+        { "id": "B2_ORIENTATION_TO_RADIUS", "type": "bridge", "text": "Finally we look at the scope of concern around each choice.", "target": "Q3_RADIUS_PRIMARY" },
+        {
+          "id": "Q3_RADIUS_PRIMARY", "type": "question", "axis": "radius", "state_key": "radius_primary",
+          "prompt": "Who is centered most in your next decision?",
+          "options": [
+            { "id": "self_protection", "label": "Primarily my own position", "target": "Q3B_RADIUS_HORIZON" },
+            { "id": "near_circle", "label": "My needs and immediate counterparts", "target": "Q3B_RADIUS_HORIZON" },
+            { "id": "system_impact", "label": "My needs plus wider system impact", "target": "Q3B_RADIUS_HORIZON" }
+          ]
+        },
+        {
+          "id": "Q3B_RADIUS_HORIZON", "type": "question", "axis": "radius", "state_key": "radius_horizon",
+          "prompt": "How far ahead do you usually evaluate downstream effects?",
+          "options": [
+            { "id": "today", "label": "Today and immediate risk", "target": "D3_RADIUS_CLASSIFIER" },
+            { "id": "this_week", "label": "This week and near consequences", "target": "D3_RADIUS_CLASSIFIER" },
+            { "id": "multi_step", "label": "Several steps ahead", "target": "D3_RADIUS_CLASSIFIER" }
+          ]
+        },
+        {
+          "id": "D3_RADIUS_CLASSIFIER", "type": "decision", "input": ["radius_primary", "radius_horizon"],
+          "mappings": [
+            { "when": { "radius_primary": "self_protection", "radius_horizon": "today" }, "set": { "radius_state": "self_centrism" }, "target": "D4_REFLECTION_SELECTOR" },
+            { "when": { "radius_primary": "self_protection", "radius_horizon": "this_week" }, "set": { "radius_state": "self_centrism" }, "target": "D4_REFLECTION_SELECTOR" },
+            { "when": { "radius_primary": "self_protection", "radius_horizon": "multi_step" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+            { "when": { "radius_primary": "near_circle", "radius_horizon": "today" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+            { "when": { "radius_primary": "near_circle", "radius_horizon": "this_week" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+            { "when": { "radius_primary": "near_circle", "radius_horizon": "multi_step" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+            { "when": { "radius_primary": "system_impact", "radius_horizon": "today" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+            { "when": { "radius_primary": "system_impact", "radius_horizon": "this_week" }, "set": { "radius_state": "altrocentrism" }, "target": "D4_REFLECTION_SELECTOR" },
+            { "when": { "radius_primary": "system_impact", "radius_horizon": "multi_step" }, "set": { "radius_state": "altrocentrism" }, "target": "D4_REFLECTION_SELECTOR" }
+          ]
+        },
+        {
+          "id": "D4_REFLECTION_SELECTOR", "type": "decision", "input": ["locus_state", "orientation_state", "radius_state"],
+          "mappings": [
+            { "when": { "locus_state": "victim", "orientation_state": "entitlement", "radius_state": "self_centrism" }, "target": "R1_STABILIZE_AGENCY" },
+            { "when": { "locus_state": "victim", "orientation_state": "entitlement", "radius_state": "balanced" }, "target": "R1_STABILIZE_AGENCY" },
+            { "when": { "locus_state": "victim", "orientation_state": "entitlement", "radius_state": "altrocentrism" }, "target": "R2_RECIPROCAL_RESET" },
+            { "when": { "locus_state": "victim", "orientation_state": "balanced", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+            { "when": { "locus_state": "victim", "orientation_state": "balanced", "radius_state": "balanced" }, "target": "R3_GROUNDED_BOUNDARIES" },
+            { "when": { "locus_state": "victim", "orientation_state": "balanced", "radius_state": "altrocentrism" }, "target": "R4_SHARED_STEADINESS" },
+            { "when": { "locus_state": "victim", "orientation_state": "contribution", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+            { "when": { "locus_state": "victim", "orientation_state": "contribution", "radius_state": "balanced" }, "target": "R4_SHARED_STEADINESS" },
+            { "when": { "locus_state": "victim", "orientation_state": "contribution", "radius_state": "altrocentrism" }, "target": "R4_SHARED_STEADINESS" },
+            { "when": { "locus_state": "balanced", "orientation_state": "entitlement", "radius_state": "self_centrism" }, "target": "R2_RECIPROCAL_RESET" },
+            { "when": { "locus_state": "balanced", "orientation_state": "entitlement", "radius_state": "balanced" }, "target": "R2_RECIPROCAL_RESET" },
+            { "when": { "locus_state": "balanced", "orientation_state": "entitlement", "radius_state": "altrocentrism" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+            { "when": { "locus_state": "balanced", "orientation_state": "balanced", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+            { "when": { "locus_state": "balanced", "orientation_state": "balanced", "radius_state": "balanced" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+            { "when": { "locus_state": "balanced", "orientation_state": "balanced", "radius_state": "altrocentrism" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+            { "when": { "locus_state": "balanced", "orientation_state": "contribution", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+            { "when": { "locus_state": "balanced", "orientation_state": "contribution", "radius_state": "balanced" }, "target": "R4_SHARED_STEADINESS" },
+            { "when": { "locus_state": "balanced", "orientation_state": "contribution", "radius_state": "altrocentrism" }, "target": "R6_GENERATIVE_STEWARDSHIP" },
+            { "when": { "locus_state": "victor", "orientation_state": "entitlement", "radius_state": "self_centrism" }, "target": "R2_RECIPROCAL_RESET" },
+            { "when": { "locus_state": "victor", "orientation_state": "entitlement", "radius_state": "balanced" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+            { "when": { "locus_state": "victor", "orientation_state": "entitlement", "radius_state": "altrocentrism" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+            { "when": { "locus_state": "victor", "orientation_state": "balanced", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
+            { "when": { "locus_state": "victor", "orientation_state": "balanced", "radius_state": "balanced" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+            { "when": { "locus_state": "victor", "orientation_state": "balanced", "radius_state": "altrocentrism" }, "target": "R6_GENERATIVE_STEWARDSHIP" },
+            { "when": { "locus_state": "victor", "orientation_state": "contribution", "radius_state": "self_centrism" }, "target": "R4_SHARED_STEADINESS" },
+            { "when": { "locus_state": "victor", "orientation_state": "contribution", "radius_state": "balanced" }, "target": "R6_GENERATIVE_STEWARDSHIP" },
+            { "when": { "locus_state": "victor", "orientation_state": "contribution", "radius_state": "altrocentrism" }, "target": "R6_GENERATIVE_STEWARDSHIP" }
+          ]
+        },
+        { "id": "R1_STABILIZE_AGENCY", "type": "reflection", "text": "When life feels narrow, steadiness can begin with one controllable move. Quiet progress is still progress.", "target": "Q4_CLOSE_STEP" },
+        { "id": "R2_RECIPROCAL_RESET", "type": "reflection", "text": "Reciprocity works best when expectations are visible. Clarity often reduces tension faster than intensity.", "target": "Q4_CLOSE_STEP" },
+        { "id": "R3_GROUNDED_BOUNDARIES", "type": "reflection", "text": "Boundaries and contribution can coexist. A calm boundary often protects quality, not just energy.", "target": "Q4_CLOSE_STEP" },
+        { "id": "R4_SHARED_STEADINESS", "type": "reflection", "text": "Sustainable momentum comes from shared load. Name one step, one partner, and one handoff.", "target": "Q4_CLOSE_STEP" },
+        { "id": "R5_SYSTEMS_RECIPROCITY", "type": "reflection", "text": "Fair exchange strengthens systems over time. Small, explicit agreements compound into trust.", "target": "Q4_CLOSE_STEP" },
+        { "id": "R6_GENERATIVE_STEWARDSHIP", "type": "reflection", "text": "You are balancing agency with wider impact. Keep it durable by matching ambition to a realistic cadence.", "target": "Q4_CLOSE_STEP" },
+        {
+          "id": "Q4_CLOSE_STEP", "type": "question", "axis": "closure", "state_key": "close_step_style",
+          "prompt": "What closing step style fits best for the next 24 hours?",
+          "options": [
+            { "id": "quiet_commitment", "label": "One quiet commitment", "target": "D5_CLOSING_ROUTE" },
+            { "id": "shared_alignment", "label": "One explicit alignment message", "target": "D5_CLOSING_ROUTE" },
+            { "id": "small_experiment", "label": "One reversible experiment", "target": "D5_CLOSING_ROUTE" }
+          ]
+        },
+        {
+          "id": "D5_CLOSING_ROUTE", "type": "decision", "input": ["close_step_style"],
+          "mappings": [
+            { "when": { "close_step_style": "quiet_commitment" }, "target": "SUMMARY" },
+            { "when": { "close_step_style": "shared_alignment" }, "target": "SUMMARY" },
+            { "when": { "close_step_style": "small_experiment" }, "target": "SUMMARY" }
+          ]
+        },
+        {
+          "id": "SUMMARY", "type": "summary",
+          "template": {
+            "lines": ["Locus: {locus_state}", "Orientation: {orientation_state}", "Radius: {radius_state}", "Closing style: {close_step_style}"],
+            "closing": "Choose one concrete action in the next day and keep it observable."
+          },
+          "target": "END"
+        },
+        { "id": "END", "type": "end" }
+      ]
     };
 
     const app = document.getElementById("app");
+    const state = {
+      tree: null,
+      nodeMap: new Map(),
+      currentNodeId: null,
+      answersByNode: {},
+      runtimeState: {},
+      axisSignals: {}
+    };
 
-    function pathKey(answers) {
-      return [answers.locus, answers.orientation, answers.radius].join("|");
+    function resetRunState() {
+      state.answersByNode = {};
+      state.runtimeState = {};
+      state.axisSignals = {};
+      state.currentNodeId = state.tree.start_node_id;
     }
 
-    function profileIndex(tree) {
-      const map = new Map();
-      tree.leaf_profiles.forEach((p) => {
-        const k = [p.path.locus, p.path.orientation, p.path.radius].join("|");
-        map.set(k, p);
+    function pushAxisSignal(axis, value) {
+      if (!axis) return;
+      if (!state.axisSignals[axis]) state.axisSignals[axis] = [];
+      state.axisSignals[axis].push(String(value));
+    }
+
+    function interpolate(text) {
+      return String(text).replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key) => {
+        if (Object.prototype.hasOwnProperty.call(state.runtimeState, key)) {
+          return state.runtimeState[key];
+        }
+        return `<missing:${key}>`;
       });
-      return map;
     }
 
-    function nextNodeIdFromAxisOrder(tree, currentAxis) {
-      const i = tree.axes_order.indexOf(currentAxis);
-      const nextAxis = tree.axes_order[i + 1];
-      const nextNode = tree.nodes.find((n) => n.axis === nextAxis);
-      return nextNode ? nextNode.id : null;
+    function chooseSummaryVariant(axisDominant) {
+      const key = [axisDominant.locus, axisDominant.orientation, axisDominant.radius].join("|");
+      if (key === "victim|entitlement|self_centrism") {
+        return [
+          "You are carrying pressure while protecting your own footing.",
+          "A stabilizing next step is one concrete action that restores agency before negotiating expectations."
+        ];
+      }
+      if (key === "victor|contribution|altrocentrism") {
+        return [
+          "You are pairing initiative with a contribution mindset and a broad field of view.",
+          "Sustain this by keeping one visible commitment and one clear boundary in the same window."
+        ];
+      }
+
+      const byLocus = {
+        victim: "The current stance suggests constrained agency; start with one controllable move.",
+        balanced: "The current stance suggests a mixed agency window; clarity and pacing will help.",
+        victor: "The current stance suggests active agency; convert momentum into steady execution."
+      };
+      const byOrientation = {
+        entitlement: "Keep expectations explicit so exchange stays workable.",
+        balanced: "Hold reciprocity and contribution in view at the same time.",
+        contribution: "Your contribution stance is a strength when paired with sustainable limits."
+      };
+      return [
+        byLocus[axisDominant.locus] || "Use a small concrete step to create traction.",
+        byOrientation[axisDominant.orientation] || "Keep the next step observable and time-bounded."
+      ];
+    }
+
+    function dominantValue(items) {
+      if (!items || !items.length) return "unknown";
+      const counts = new Map();
+      items.forEach((v) => counts.set(v, (counts.get(v) || 0) + 1));
+      const max = Math.max(...counts.values());
+      const top = new Set([...counts.entries()].filter(([, c]) => c === max).map(([v]) => v));
+      for (const v of items) {
+        if (top.has(v)) return v;
+      }
+      return items[0];
+    }
+
+    function computeAxisDominance() {
+      const out = {};
+      (state.tree.axis_sequence || []).forEach((axis) => {
+        const direct = `${axis}_state`;
+        out[axis] = state.runtimeState[direct] || dominantValue(state.axisSignals[axis] || []);
+      });
+      return out;
+    }
+
+    function fail(message) {
+      app.innerHTML = `<div class="error">Error: ${message}</div>`;
+    }
+
+    function getNode(id) {
+      const node = state.nodeMap.get(id);
+      if (!node) throw new Error(`Unknown node '${id}'.`);
+      return node;
+    }
+
+    function selectDecisionMapping(node) {
+      const mappings = node.mappings;
+      if (!Array.isArray(mappings) || !mappings.length) {
+        throw new Error(`Decision node '${node.id}' requires non-empty mappings.`);
+      }
+      const hits = mappings.filter((m) => {
+        if (!m.when || typeof m.when !== "object") throw new Error(`Decision '${node.id}' has invalid 'when'.`);
+        return Object.entries(m.when).every(([k, v]) => state.runtimeState[k] === v);
+      });
+      if (hits.length !== 1) {
+        throw new Error(`Decision node '${node.id}' expected 1 route, found ${hits.length}.`);
+      }
+      return hits[0];
     }
 
     function renderQuestion(node) {
-      app.innerHTML = "";
-      const prompt = document.createElement("div");
-      prompt.className = "prompt";
-      prompt.textContent = `${node.axis.toUpperCase()}: ${node.prompt}`;
-      app.appendChild(prompt);
-
-      const options = document.createElement("div");
-      options.className = "options";
-
-      node.options.forEach((opt) => {
-        const btn = document.createElement("button");
-        btn.className = "option";
-        btn.type = "button";
-        btn.textContent = `${opt.label} [${opt.id}]`;
-        btn.addEventListener("click", () => {
-          state.answers[node.axis] = opt.id;
-          if (opt.next === "END") {
-            renderResult();
-            return;
+      if (!Array.isArray(node.options) || !node.options.length) throw new Error(`Question '${node.id}' missing options.`);
+      const axis = (node.axis || "question").toUpperCase();
+      app.innerHTML = `
+        <div class="chip">${axis}</div>
+        <p class="prompt">${node.prompt || "(missing prompt)"}</p>
+        <div class="options" id="options"></div>
+        <div class="meta" id="meta"></div>
+      `;
+      const optionsEl = document.getElementById("options");
+      node.options.forEach((opt, idx) => {
+        if (!opt.id || !opt.label || !opt.target) throw new Error(`Question '${node.id}' has malformed option.`);
+        const button = document.createElement("button");
+        button.className = "option";
+        button.textContent = `${idx + 1}. ${opt.label}`;
+        button.type = "button";
+        button.addEventListener("click", () => {
+          state.answersByNode[node.id] = opt.id;
+          if (node.state_key) {
+            state.runtimeState[node.state_key] = opt.id;
+            pushAxisSignal(node.axis, opt.id);
           }
-          state.currentNodeId = nextNodeIdFromAxisOrder(state.tree, node.axis);
+          state.currentNodeId = opt.target;
           renderCurrent();
         });
-        options.appendChild(btn);
+        optionsEl.appendChild(button);
       });
-      app.appendChild(options);
-      renderPath();
+
+      const axis = computeAxisDominance();
+      document.getElementById("meta").textContent =
+        `Current signals: locus=${axis.locus || "-"}, orientation=${axis.orientation || "-"}, radius=${axis.radius || "-"}`;
     }
 
-    function renderPath() {
-      const p = document.createElement("div");
-      p.className = "path";
-      const a = state.answers;
-      p.textContent = `Path so far: locus=${a.locus || "-"} -> orientation=${a.orientation || "-"} -> radius=${a.radius || "-"}`;
-      app.appendChild(p);
-    }
-
-    function renderResult() {
-      app.innerHTML = "";
-      const idx = profileIndex(state.tree);
-      const key = pathKey(state.answers);
-      const profile = idx.get(key);
-      if (!profile) {
-        app.innerHTML = `<div class="error">Tree/profile mismatch for path: ${key}</div>`;
-        return;
-      }
-
-      const result = document.createElement("div");
-      result.className = "result";
-      result.style.display = "block";
-      result.innerHTML = `
-        <div><strong>Path:</strong> locus=${state.answers.locus} -> orientation=${state.answers.orientation} -> radius=${state.answers.radius}</div>
-        <div style="margin-top:8px;"><strong>Profile:</strong> ${profile.title} (${profile.id})</div>
-        <div style="margin-top:8px;"><strong>Reflection:</strong> ${profile.reflection}</div>
-        <div style="margin-top:8px;"><strong>Suggested next micro-step:</strong> Choose one concrete action in the next 24 hours that matches this stance.</div>
+    function renderReflection(node) {
+      app.innerHTML = `
+        <div class="chip">Reflection</div>
+        <div class="block">
+          <h3>Pause</h3>
+          <p>${interpolate(node.text || "")}</p>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="continue">Continue</button>
+        </div>
       `;
-      app.appendChild(result);
+      document.getElementById("continue").addEventListener("click", () => {
+        if (!node.target) throw new Error(`Reflection node '${node.id}' missing target.`);
+        state.currentNodeId = node.target;
+        renderCurrent();
+      });
+    }
 
-      const restart = document.createElement("button");
-      restart.className = "restart";
-      restart.textContent = "Start again";
-      restart.addEventListener("click", startRun);
-      app.appendChild(restart);
+    function renderSummary(node) {
+      const axis = computeAxisDominance();
+      Object.entries(axis).forEach(([k, v]) => {
+        state.runtimeState[`${k}_state`] = state.runtimeState[`${k}_state`] || v;
+      });
+      const variant = chooseSummaryVariant(axis);
+      const template = node.template || {};
+      const lines = Array.isArray(template.lines) ? template.lines : [];
+      const closing = template.closing ? [template.closing] : [];
+      const finalLines = [...variant, ...lines, ...closing].map(interpolate);
+
+      const listItems = finalLines.map((line) => `<li>${line}</li>`).join("");
+      app.innerHTML = `
+        <div class="chip">Summary</div>
+        <div class="block">
+          <h3>Result</h3>
+          <ul class="list">${listItems}</ul>
+        </div>
+        <div class="meta">Dominant axis states: locus=${axis.locus}, orientation=${axis.orientation}, radius=${axis.radius}</div>
+      `;
+
+      if (!node.target) throw new Error(`Summary node '${node.id}' missing target.`);
+      state.currentNodeId = node.target;
+      queueMicrotask(renderCurrent);
+    }
+
+    function renderEnd() {
+      app.innerHTML += `
+        <div class="actions">
+          <button class="btn primary" id="restart">Start again</button>
+        </div>
+      `;
+      document.getElementById("restart").addEventListener("click", () => {
+        resetRunState();
+        renderCurrent();
+      });
     }
 
     function renderCurrent() {
-      const node = state.nodeMap.get(state.currentNodeId);
-      if (!node) {
-        app.innerHTML = `<div class="error">Missing node: ${state.currentNodeId}</div>`;
-        return;
+      try {
+        const node = getNode(state.currentNodeId);
+        switch (node.type) {
+          case "start":
+            if (!node.target) throw new Error(`Start node '${node.id}' missing target.`);
+            state.currentNodeId = node.target;
+            renderCurrent();
+            return;
+          case "question":
+            renderQuestion(node);
+            return;
+          case "decision": {
+            const selected = selectDecisionMapping(node);
+            if (selected.set && typeof selected.set === "object") {
+              Object.entries(selected.set).forEach(([k, v]) => {
+                state.runtimeState[k] = v;
+                const axis = k.split("_", 1)[0];
+                pushAxisSignal(axis, v);
+              });
+            }
+            if (!selected.target) throw new Error(`Decision '${node.id}' mapping missing target.`);
+            state.currentNodeId = selected.target;
+            renderCurrent();
+            return;
+          }
+          case "bridge":
+            if (!node.target) throw new Error(`Bridge node '${node.id}' missing target.`);
+            app.innerHTML = `
+              <div class="chip">Transition</div>
+              <div class="block"><p>${interpolate(node.text || "")}</p></div>
+            `;
+            setTimeout(() => {
+              state.currentNodeId = node.target;
+              renderCurrent();
+            }, 220);
+            return;
+          case "reflection":
+            renderReflection(node);
+            return;
+          case "summary":
+            renderSummary(node);
+            return;
+          case "end":
+            renderEnd();
+            return;
+          default:
+            throw new Error(`Unsupported node type '${node.type}'.`);
+        }
+      } catch (err) {
+        fail(err && err.message ? err.message : String(err));
       }
-      renderQuestion(node);
     }
 
-    function startRun() {
-      state.answers = {};
-      state.currentNodeId = state.tree.start_node_id;
-      renderCurrent();
+    function initNodeMap(tree) {
+      state.nodeMap = new Map();
+      if (!Array.isArray(tree.nodes) || !tree.nodes.length) throw new Error("Tree is missing nodes.");
+      tree.nodes.forEach((n) => {
+        if (!n.id || typeof n.id !== "string") throw new Error("Every node must have a string id.");
+        if (state.nodeMap.has(n.id)) throw new Error(`Duplicate node id '${n.id}'.`);
+        state.nodeMap.set(n.id, n);
+      });
+      if (!tree.start_node_id || !state.nodeMap.has(tree.start_node_id)) {
+        throw new Error("Tree start_node_id is missing or invalid.");
+      }
+    }
+
+    async function loadTree() {
+      try {
+        const res = await fetch("../tree/reflection-tree.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (_) {
+        return EMBEDDED_TREE;
+      }
     }
 
     async function init() {
       try {
-        const res = await fetch("../tree/reflection-tree.json", { cache: "no-store" });
-        if (!res.ok) throw new Error(`Unable to load tree JSON (${res.status})`);
-        state.tree = await res.json();
-        state.tree.nodes.forEach((n) => state.nodeMap.set(n.id, n));
-        startRun();
+        state.tree = await loadTree();
+        initNodeMap(state.tree);
+        resetRunState();
+        renderCurrent();
       } catch (err) {
-        app.innerHTML = `<div class="error">${String(err.message || err)}</div>
-          <div class="path">Tip: serve this directory with a local static server so the browser can load ../tree/reflection-tree.json.</div>`;
+        fail(err && err.message ? err.message : String(err));
       }
     }
 
