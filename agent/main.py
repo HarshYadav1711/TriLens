@@ -153,6 +153,42 @@ def compute_axis_dominance(tree: Dict[str, Any], state: Dict[str, str], axis_sig
     return result
 
 
+def choose_summary_variant(axis_dominant: Dict[str, str]) -> List[str]:
+    """Return deterministic summary lines from dominant axis pattern."""
+    locus = axis_dominant.get("locus", "unknown")
+    orientation = axis_dominant.get("orientation", "unknown")
+    radius = axis_dominant.get("radius", "unknown")
+    pattern = (locus, orientation, radius)
+
+    variants = {
+        ("victim", "entitlement", "self_centrism"): [
+            "You are carrying pressure while protecting your own footing.",
+            "A stabilizing next step is one concrete action that restores agency before negotiating expectations."
+        ],
+        ("victor", "contribution", "altrocentrism"): [
+            "You are pairing initiative with a contribution mindset and a broad field of view.",
+            "Sustain this by keeping one visible commitment and one clear boundary in the same window."
+        ],
+    }
+    if pattern in variants:
+        return variants[pattern]
+
+    fallback_by_locus = {
+        "victim": "The current stance suggests constrained agency; start with one controllable move.",
+        "balanced": "The current stance suggests a mixed agency window; clarity and pacing will help.",
+        "victor": "The current stance suggests active agency; convert momentum into steady execution.",
+    }
+    fallback_by_orientation = {
+        "entitlement": "Keep expectations explicit so exchange stays workable.",
+        "balanced": "Hold reciprocity and contribution in view at the same time.",
+        "contribution": "Your contribution stance is a strength when paired with sustainable limits.",
+    }
+    return [
+        fallback_by_locus.get(locus, "Use a small concrete step to create traction."),
+        fallback_by_orientation.get(orientation, "Keep the next step observable and time-bounded."),
+    ]
+
+
 def run(tree: Dict[str, Any]) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, str]]:
     node_map = build_node_map(tree)
     start_id = tree.get("start_node_id")
@@ -240,6 +276,8 @@ def run(tree: Dict[str, Any]) -> Tuple[Dict[str, str], Dict[str, str], Dict[str,
                 raise TreeRuntimeError(f"Summary node '{current_id}' has invalid template lines.")
 
             print("\nSummary:")
+            for line in choose_summary_variant(axis_dominant):
+                print(f"- {interpolate(line, state)}")
             for line in lines:
                 if not isinstance(line, str):
                     raise TreeRuntimeError(f"Summary node '{current_id}' includes non-string line.")
