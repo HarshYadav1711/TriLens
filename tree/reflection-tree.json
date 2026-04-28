@@ -94,9 +94,11 @@
         { "when": { "locus_primary": "outside_forces", "locus_window": "mostly" }, "set": { "locus_state": "victim" }, "target": "B1_LOCUS_TO_ORIENTATION" },
         { "when": { "locus_primary": "outside_forces", "locus_window": "mixed" }, "set": { "locus_state": "victim" }, "target": "B1_LOCUS_TO_ORIENTATION" },
         { "when": { "locus_primary": "outside_forces", "locus_window": "shifting" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+
         { "when": { "locus_primary": "shared_influence", "locus_window": "mostly" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
         { "when": { "locus_primary": "shared_influence", "locus_window": "mixed" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
         { "when": { "locus_primary": "shared_influence", "locus_window": "shifting" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" },
+
         { "when": { "locus_primary": "next_action", "locus_window": "mostly" }, "set": { "locus_state": "victor" }, "target": "B1_LOCUS_TO_ORIENTATION" },
         { "when": { "locus_primary": "next_action", "locus_window": "mixed" }, "set": { "locus_state": "victor" }, "target": "B1_LOCUS_TO_ORIENTATION" },
         { "when": { "locus_primary": "next_action", "locus_window": "shifting" }, "set": { "locus_state": "balanced" }, "target": "B1_LOCUS_TO_ORIENTATION" }
@@ -140,9 +142,11 @@
         { "when": { "orientation_primary": "how_can_i_help", "orientation_balance": "lean_in" }, "set": { "orientation_state": "contribution" }, "target": "B2_ORIENTATION_TO_RADIUS" },
         { "when": { "orientation_primary": "how_can_i_help", "orientation_balance": "recalibrate" }, "set": { "orientation_state": "contribution" }, "target": "B2_ORIENTATION_TO_RADIUS" },
         { "when": { "orientation_primary": "how_can_i_help", "orientation_balance": "hold_line" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+
         { "when": { "orientation_primary": "what_is_fair", "orientation_balance": "lean_in" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
         { "when": { "orientation_primary": "what_is_fair", "orientation_balance": "recalibrate" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
         { "when": { "orientation_primary": "what_is_fair", "orientation_balance": "hold_line" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
+
         { "when": { "orientation_primary": "what_is_owed", "orientation_balance": "lean_in" }, "set": { "orientation_state": "balanced" }, "target": "B2_ORIENTATION_TO_RADIUS" },
         { "when": { "orientation_primary": "what_is_owed", "orientation_balance": "recalibrate" }, "set": { "orientation_state": "entitlement" }, "target": "B2_ORIENTATION_TO_RADIUS" },
         { "when": { "orientation_primary": "what_is_owed", "orientation_balance": "hold_line" }, "set": { "orientation_state": "entitlement" }, "target": "B2_ORIENTATION_TO_RADIUS" }
@@ -186,9 +190,11 @@
         { "when": { "radius_primary": "self_protection", "radius_horizon": "today" }, "set": { "radius_state": "self_centrism" }, "target": "D4_REFLECTION_SELECTOR" },
         { "when": { "radius_primary": "self_protection", "radius_horizon": "this_week" }, "set": { "radius_state": "self_centrism" }, "target": "D4_REFLECTION_SELECTOR" },
         { "when": { "radius_primary": "self_protection", "radius_horizon": "multi_step" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+
         { "when": { "radius_primary": "near_circle", "radius_horizon": "today" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
         { "when": { "radius_primary": "near_circle", "radius_horizon": "this_week" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
         { "when": { "radius_primary": "near_circle", "radius_horizon": "multi_step" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
+
         { "when": { "radius_primary": "system_impact", "radius_horizon": "today" }, "set": { "radius_state": "balanced" }, "target": "D4_REFLECTION_SELECTOR" },
         { "when": { "radius_primary": "system_impact", "radius_horizon": "this_week" }, "set": { "radius_state": "altrocentrism" }, "target": "D4_REFLECTION_SELECTOR" },
         { "when": { "radius_primary": "system_impact", "radius_horizon": "multi_step" }, "set": { "radius_state": "altrocentrism" }, "target": "D4_REFLECTION_SELECTOR" }
@@ -202,27 +208,35 @@
         { "when": { "locus_state": "victim", "orientation_state": "entitlement", "radius_state": "self_centrism" }, "target": "R1_STABILIZE_AGENCY" },
         { "when": { "locus_state": "victim", "orientation_state": "entitlement", "radius_state": "balanced" }, "target": "R1_STABILIZE_AGENCY" },
         { "when": { "locus_state": "victim", "orientation_state": "entitlement", "radius_state": "altrocentrism" }, "target": "R2_RECIPROCAL_RESET" },
+
         { "when": { "locus_state": "victim", "orientation_state": "balanced", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
         { "when": { "locus_state": "victim", "orientation_state": "balanced", "radius_state": "balanced" }, "target": "R3_GROUNDED_BOUNDARIES" },
         { "when": { "locus_state": "victim", "orientation_state": "balanced", "radius_state": "altrocentrism" }, "target": "R4_SHARED_STEADINESS" },
+
         { "when": { "locus_state": "victim", "orientation_state": "contribution", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
         { "when": { "locus_state": "victim", "orientation_state": "contribution", "radius_state": "balanced" }, "target": "R4_SHARED_STEADINESS" },
         { "when": { "locus_state": "victim", "orientation_state": "contribution", "radius_state": "altrocentrism" }, "target": "R4_SHARED_STEADINESS" },
+
         { "when": { "locus_state": "balanced", "orientation_state": "entitlement", "radius_state": "self_centrism" }, "target": "R2_RECIPROCAL_RESET" },
         { "when": { "locus_state": "balanced", "orientation_state": "entitlement", "radius_state": "balanced" }, "target": "R2_RECIPROCAL_RESET" },
         { "when": { "locus_state": "balanced", "orientation_state": "entitlement", "radius_state": "altrocentrism" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+
         { "when": { "locus_state": "balanced", "orientation_state": "balanced", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
         { "when": { "locus_state": "balanced", "orientation_state": "balanced", "radius_state": "balanced" }, "target": "R5_SYSTEMS_RECIPROCITY" },
         { "when": { "locus_state": "balanced", "orientation_state": "balanced", "radius_state": "altrocentrism" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+
         { "when": { "locus_state": "balanced", "orientation_state": "contribution", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
         { "when": { "locus_state": "balanced", "orientation_state": "contribution", "radius_state": "balanced" }, "target": "R4_SHARED_STEADINESS" },
         { "when": { "locus_state": "balanced", "orientation_state": "contribution", "radius_state": "altrocentrism" }, "target": "R6_GENERATIVE_STEWARDSHIP" },
+
         { "when": { "locus_state": "victor", "orientation_state": "entitlement", "radius_state": "self_centrism" }, "target": "R2_RECIPROCAL_RESET" },
         { "when": { "locus_state": "victor", "orientation_state": "entitlement", "radius_state": "balanced" }, "target": "R5_SYSTEMS_RECIPROCITY" },
         { "when": { "locus_state": "victor", "orientation_state": "entitlement", "radius_state": "altrocentrism" }, "target": "R5_SYSTEMS_RECIPROCITY" },
+
         { "when": { "locus_state": "victor", "orientation_state": "balanced", "radius_state": "self_centrism" }, "target": "R3_GROUNDED_BOUNDARIES" },
         { "when": { "locus_state": "victor", "orientation_state": "balanced", "radius_state": "balanced" }, "target": "R5_SYSTEMS_RECIPROCITY" },
         { "when": { "locus_state": "victor", "orientation_state": "balanced", "radius_state": "altrocentrism" }, "target": "R6_GENERATIVE_STEWARDSHIP" },
+
         { "when": { "locus_state": "victor", "orientation_state": "contribution", "radius_state": "self_centrism" }, "target": "R4_SHARED_STEADINESS" },
         { "when": { "locus_state": "victor", "orientation_state": "contribution", "radius_state": "balanced" }, "target": "R6_GENERATIVE_STEWARDSHIP" },
         { "when": { "locus_state": "victor", "orientation_state": "contribution", "radius_state": "altrocentrism" }, "target": "R6_GENERATIVE_STEWARDSHIP" }
