@@ -481,7 +481,7 @@
         renderCurrent();
       } catch (err) {
         const msg = err && err.message ? err.message : String(err);
-        fail(`${msg} Serve the repository locally (for example: python -m http.server 8000) and open /agent/web.html.`);
+        fail(`${msg} Run this from the project root: python -m http.server 8000, then open /agent/web.html.`);
       }
     }
 
