@@ -83,6 +83,17 @@ These are design choices to protect clarity, auditability, and trust:
 
 ---
 
+## What This System Intentionally Avoids
+
+* Ambiguity -> fixed-choice questions with explicit option IDs
+* Non-determinism -> explicit decision mappings for every route
+* Hidden reasoning -> fully inspectable tree data and mapping tables
+* Drift between interfaces -> single source of truth in `tree/reflection-tree.json`
+* Over-reflection fatigue -> bounded flow designed for a short, finite run
+* Runtime divergence -> generic traversal engine instead of hardcoded branch logic
+
+---
+
 ## Why Deterministic
 
 Reflection requires trust.
